@@ -23,13 +23,27 @@ let rec pow s n =
 let isIthChar (s:string, i:int, c:char) =
     if s.Chars(i) = c then true else false
 
+// opg 2.5
 let occInString (s:string, c:char) =
     s |> String.filter (fun c2 -> c=c2) |> String.length
 
+
+// Opg 2.6
+let notDivisible (i:int, j:int) = 
+    (i%j)>0
+
+
+// opg 4.1
+let upto(i: int) = 
+    [1 .. i]
+
+let downTo(i: int) =
+    [i .. -1 .. 1]
+
 [<EntryPoint>]
 let main argv =
-    let x = pow "XD" 1
-    let y = isIthChar( x, 1, 'D')
-    let j = occInString(x, 'D')
+    let x: string = pow "XD" 1
+    let y: bool = isIthChar( x, 1, 'D')
+    let j: int = occInString(x, 'D')
     printfn "%d" j
     0 // return an integer exit code
