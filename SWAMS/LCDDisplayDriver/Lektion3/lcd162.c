@@ -24,27 +24,28 @@
 // Enabling us to use macro _NOP() to insert the NOP instruction
 #include <avr/cpufunc.h>
 #include "lcd162.h"
-
 // library function itoa() is needed
 #include <stdlib.h>
-
 //*********************** PRIVATE (static) operations *********************
 static void waitBusy()
 {
-	_delay_us(20)
+	_delay_ms(20);
 }  
 
 static void pulse_E()
 {
-	// Set LCD E to high
-	PORTH |= 1<<6
-	// 4 NOP = 250 ns @ 16MHz   
-	_NOP()
-	_NOP()
-	_NOP()
-	_NOP()
-	// Set LCD E to low
-	PORTH &= ~(1<<6)
+	// 1 NOP = 
+	PORTH |= 1<<6;
+	_NOP(); // PW_EH (Pulse width enable hold)
+	_NOP();
+	_NOP();
+	_NOP();
+	_NOP();
+	_NOP();
+	PORTH &= ~(1<<6);
+	_NOP(); // Add one NOP for t_H  (Hold time)
+	_NOP();
+  // To be implemented 
 }
 
 // Sets the display data pins according to the 4 lower bits of data
@@ -56,13 +57,27 @@ static void set4DataPins(unsigned char data)
 }
 
 static void sendInstruction(unsigned char data)
-{      
-  // To be implemented
+{     
+	PORTH &= ~(1<<5);  // RS skift til 0 for IR (instruction register)
+	
+	set4DataPins(data>>4);
+	pulse_E();
+	set4DataPins(data);
+	pulse_E();
+	
+	waitBusy();
 }
 
 static void sendData(unsigned char data)
 {      
-  // To be implemented
+  	PORTH |= (1<<5);  // RS skift til 1 for write to Data register
+  	
+  	set4DataPins(data>>4);
+  	pulse_E();
+  	set4DataPins(data);
+  	pulse_E();
+  	
+  	waitBusy();
 }
 
 //*********************** PUBLIC functions *****************************
@@ -72,16 +87,16 @@ static void sendData(unsigned char data)
 // Reference: Page 46 in the HD44780 data sheet
 void LCDInit()
 {
-  // Initializing the used port
+  // Initializing the used 
   DDRH |= 0b01111000;  // Outputs
-  DDRE |= 0b00001000;
-  DDRG |= 0b00100000;
+  DDRE |= 0b00001000;  // 3 
+  DDRG |= 0b00100000;  // 5
   
   // Wait 50 ms (min. 15 ms demanded according to the data sheet)
   _delay_ms(50);
   // Function set (still 8 bit interface)
-  PORTG |= 0b00100000;
-  PORTE |= 0b00001000;
+  PORTG |= 0b00100000; // bit 5
+  PORTE |= 0b00001000; // bit 3
   pulse_E();
   
   // Wait 10 ms (min. 4,1 ms demanded according to the data sheet)
@@ -116,19 +131,21 @@ void LCDInit()
 // the upper line, leftmost character
 void LCDClear()
 {
-  // To be implemented
+  sendInstruction(0b00000001);
+  _delay_ms(1.6); //Execution time for clear display
 }
 
 // Sets DDRAM address to character position x and line number y
 void LCDGotoXY( unsigned char x, unsigned char y )
 {
-  // To be implemented
+	
+  sendInstruction(0b10000000 | (x&0x0F) | ((y%2)<<6)); //DB7 sets to 1
 }
 
 // Display "ch" at "current display position"
 void LCDDispChar(char ch)
 {
-  // To be implemented
+  sendData(ch);
 }
 
 // Displays the string "str" starting at "current display position"
@@ -186,6 +203,9 @@ void LCDShiftRight()
 // Sets the backlight intensity to "percent" (0-100)
 void setBacklight(unsigned char percent)
 {
+	//OC2A PWM
+	DDRB |= 1<<4;
+	PORTB |= 1<<4;
   // To be implemented
 }
 
