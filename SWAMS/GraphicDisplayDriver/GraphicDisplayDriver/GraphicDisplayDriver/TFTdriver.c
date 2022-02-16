@@ -38,45 +38,45 @@
 #define RST_PORT PORTG
 #define RST_BIT 0
 
-#define BitOn(port, bit) port |= 1<<bit
-#define BitOff(port,bit) port &= ~(1<<bit)
+#define TURNON |= 1<<
+#define TURNOFF &= ~1<<
+
+#define BitOn(port, bit) port |= 1<<bit;
+#define BitOff(port,bit) port &= ~(1<<bit);
 
 // LOCAL FUNCTIONS /////////////////////////////////////////////////////////////
 
 // ILI 9341 data sheet, page 238
-void WriteCommand(unsigned int command)
+void WriteCommand(unsigned char command)
 {
-	BitOff(DC_PORT,DC_BIT);
 	BitOff(CS_PORT,CS_BIT);
+	BitOff(DC_PORT,DC_BIT);
 	BitOff(WR_PORT,WR_BIT);
-		
-	DATA_PORT_HIGH |= command>>8;
-	DATA_PORT_LOW |= command;
-
+	
+	DATA_PORT_LOW = command;
+	
 	BitOn(WR_PORT,WR_BIT);
-	//Wait atleast 10 ns -> 1NOP = 62.5 ns
-	_NOP();
-	BitOn(CS_PORT,CS_BIT);
 	BitOn(DC_PORT,DC_BIT);
+	BitOn(CS_PORT,CS_BIT);
 }
 
 // ILI 9341 data sheet, page 238
 void WriteData(unsigned int data)
 {
-			BitOff(CS_PORT,CS_BIT);
-						
-			//Højeste 8 bit			
-			BitOff(WR_PORT,WR_BIT);
-			DATA_PORT_LOW |= data>>8;
-			BitOn(WR_PORT,WR_BIT);
-			//Wait 100 ms -> 0.5s
-			
-			//laveste 8 bit
-			BitOff(WR_PORT,WR_BIT);
-			DATA_PORT_LOW |= data;
-			BitOn(WR_PORT,WR_BIT);
-			
-			BitOn(CS_PORT,CS_BIT);
+	BitOff(CS_PORT,CS_BIT);
+				
+	//Højeste 8 bit			
+	BitOff(WR_PORT,WR_BIT);
+	DATA_PORT_LOW = data>>8;
+	BitOn(WR_PORT,WR_BIT);
+	//Wait 100 ms -> 0.5s
+	
+	//laveste 8 bit
+	BitOff(WR_PORT,WR_BIT);
+	DATA_PORT_LOW = data;
+	BitOn(WR_PORT,WR_BIT);
+	
+	BitOn(CS_PORT,CS_BIT);
 }
 
 
@@ -86,12 +86,23 @@ void WriteData(unsigned int data)
 // Initializes (resets) the display
 void DisplayInit()
 {
+	DDRA |= 0xFF;
+	DDRC |= 0xFF;
+	DDRG |= 1<<CS_BIT | 1<<RST_BIT | 1<<WR_BIT;
+	DDRD |= 1<<DC_BIT;
+	
+	_delay_ms(500);
 	//Reset 
-	RST_PORT |= 1<<RST_BIT;
-	_delay_us(200);
-	//10001
+	BitOff(RST_PORT,RST_BIT);
+	//RST_PORT &= ~(1<<RST_BIT);
+	_delay_ms(50);
+	//RST_PORT |= 1<<RST_BIT;
+	BitOn(RST_PORT,RST_BIT);
+	_delay_ms(200);
 	WriteCommand(0x11);
-
+	_delay_ms(10);
+	//InterfacePixelFormat(0x55);
+	//MemoryAccessControl(0x04);
 }
 
 void DisplayOff()
@@ -104,6 +115,10 @@ void DisplayOn()
 	WriteCommand(0x29);
 }
 
+void DisplayBrightness(unsigned char brightness){
+	
+}
+
 void SleepOut()
 {
 	WriteCommand(0x11);
@@ -112,12 +127,14 @@ void SleepOut()
 void MemoryAccessControl(unsigned char parameter)
 {
 	WriteCommand(0x36);
+	WriteData(parameter);
 }
 
 void InterfacePixelFormat(unsigned char parameter)
 {
 	//D0 = 1 D1 = 0 DB2 = 1
-	WriteCommand(parameter);
+	WriteCommand(0x3A);
+	WriteData(parameter);
 	
 }
 
