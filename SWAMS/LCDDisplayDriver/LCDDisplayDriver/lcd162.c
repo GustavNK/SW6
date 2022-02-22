@@ -135,7 +135,7 @@ void LCDClear()
 // Sets DDRAM address to character position x and line number y
 void LCDGotoXY( unsigned char x, unsigned char y )
 {
-	
+		
   sendInstruction(0b10000000 | (x&0x0F) | ((y%2)<<6)); //DB7 sets to 1
 }
 
@@ -170,12 +170,15 @@ void LCDDispInteger(int i)
 // pre-defined in an 8 byte array in FLASH memory
 void LCDLoadUDC(unsigned char UDCNo, const unsigned char *UDCTab)
 {
+	//Set CGRAM address (chars in first bit row)
+	sendInstruction(0b01000000 | (UDCNo<<3));
+	
 	for (char i = 0; i < 8; i++)
 	{
-		sendInstruction(0b01000000 |(UDCNo%9 << 3) | i);
-		sendData(*(UDCTab + i));
+		//sendInstruction(0b01000000 |(UDCNo%9 << 3) | i);
+		sendData(*UDCTab++);
 	}
-	
+	LCDGotoXY(0,0);
 }
 
 // Selects, if the cursor has to be visible, and if the character at
@@ -184,46 +187,66 @@ void LCDLoadUDC(unsigned char UDCNo, const unsigned char *UDCTab)
 // "blink" not 0 => the character at the cursor position blinks.
 void LCDOnOffControl(unsigned char cursor, unsigned char blink)
 {
-  // To be implemented
+  unsigned char command  = 0b00001100;
+	if(cursor)
+		command |= 0b00000010;
+	if(blink)
+		command |= 0b00000001;
+		
+	sendInstruction(command);
 }
 
 // Moves the cursor to the left
 void LCDCursorLeft()
 {
-  // To be implemented
+  sendInstruction(1<<5);
 }
 
 // Moves the cursor to the right
 void LCDCursorRight()
 {
-  // To be implemented
+  sendInstruction(0b00010100);
 }
 
 // Moves the display text one position to the left
 void LCDShiftLeft()
 {
-  // To be implemented
+  sendInstruction(0b00011000);
 }
 
 // Moves the display text one position to the right
 void LCDShiftRight()
 {
-  // To be implemented
+   sendInstruction(0b00011100);
 }
 
 // Sets the backlight intensity to "percent" (0-100)
 void setBacklight(unsigned char percent)
 {
+	//Teacher solution
+	if(percent <= 100)
+	{
+		OCR2A = (percent*255)/100
+	}
+	
 	//OC2A PWM
-	DDRB |= 1<<4;
-	PORTB |= 1<<4;
-  // To be implemented
+	//DDRB |= 1<<4;
+	//PORTB |= 1<<4;
 }
 
 // Reads the status for the 5 on board keys
 // Returns 0, if no key pressed
 unsigned char readKeys()
 {
-  // To be implemented
-  return 'a';
+	if(ADCW < 50)
+		return 1;
+	if(ADCW < 195)
+		return 2;
+	if(ADCW < 380)
+		return 3;
+	if(ADCW < 555)
+		return 4;
+	if(ADCW < 790)
+		return 5;
+	return 0;
 }
