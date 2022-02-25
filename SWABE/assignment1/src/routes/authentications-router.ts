@@ -22,7 +22,7 @@ const requirePermission = function (perm: PERMISSIONS) {
     }
 }
 
-router.get('/users', requirePermission(PERMISSIONS.CLERK), Authentications.list)
+router.get('/users', Authentications.list)
 router.get('/users/:uid', Authentications.read)
 router.post('/user', Authentications.create)
 router.post('/login', Authentications.getJWTToken)

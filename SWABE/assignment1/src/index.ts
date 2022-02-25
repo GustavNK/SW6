@@ -6,6 +6,7 @@ import path from 'path';
 import { authentications } from './routes/authentications-router'
 import { reservations } from './routes/reservations-router'
 import { rooms } from './routes/rooms-router'
+import bodyParser from 'body-parser'
 
 const app = express();
 const port = 3000;
@@ -17,6 +18,8 @@ const options = {
 
 app.use(express.static('public'));
 app.use(helmet());
+
+app.use(bodyParser.json());
 
 //Use the routes
 app.use('/', authentications);
