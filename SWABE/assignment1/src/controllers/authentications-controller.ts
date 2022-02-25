@@ -36,7 +36,7 @@ export class Authentications{
     
     //create new user
     static async create(req: Request, res: Response) {
-        const {email,password,name} = req.body;
+        const {email,password,name} = req?.body;
         if(checkUserExists(email)){
             res.status(400).json({
                 "message": "User already exists"

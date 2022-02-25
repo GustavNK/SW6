@@ -52,7 +52,7 @@ export class Rooms{
     static async update(req: Request, res: Response) {
         //const {uid, number, roleNeeded} = req.body
         //let filter = {};
-        //fil
+        //filter = {... filter, ts: {$eq: uid}}
         // 
         //try {
         //    let updatedRoom = await roomModel.updateOne(filterToFindModel, ChangesToMakeToModel);
