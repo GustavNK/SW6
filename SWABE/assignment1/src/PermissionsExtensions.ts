@@ -20,7 +20,7 @@ export const requirePermission = function (...perms: PERMISSIONS[]) {
                 res.status(401);
             }
         } else {
-            res.status(400);
+            res.status(400).json('No payload given for authentication\nNO AUTHORIZATION HEADER\n');
         }
 
     }

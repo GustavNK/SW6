@@ -19,10 +19,17 @@ app.use(express.static('public'));
 app.use(helmet());
 
 //Use the routes
-app.use('/users', authentications);
+app.use('/', authentications);
 app.use('/reservations',reservations);
 app.use('/rooms',rooms);
 
+/*********************************************************
+    ! LÆS STATUS.MD - TODO list og andre mangler/fejl !
+
+    !!!!! Tilføj jeres AU-ID til participants.txt !!!!!
+            Format: auXXXXXX Fornavn Efternavn - DONE ❤️
+
+*********************************************************/
 
 app.get('',(req,res) =>{
     res.json({
@@ -31,7 +38,7 @@ app.get('',(req,res) =>{
 })
 
 https.createServer(options,app).listen(httpsPort, () => {
-    console.log(`Running hotel management system on ${httpsPort} with HTTPS :O`);    
+    console.log(`Running hotel management system on ${httpsPort} with HTTPS 🙈🙈 :O`);    
 })
 
 app.listen(port,() => {
