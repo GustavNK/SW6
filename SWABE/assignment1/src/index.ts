@@ -28,10 +28,6 @@ app.use('/rooms',rooms);
 
 /*********************************************************
     ! LÆS STATUS.MD - TODO list og andre mangler/fejl !
-
-    !!!!! Tilføj jeres AU-ID til participants.txt !!!!!
-            Format: auXXXXXX Fornavn Efternavn - DONE ❤️
-
 *********************************************************/
 
 app.get('',(req,res) =>{
