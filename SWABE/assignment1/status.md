@@ -13,11 +13,14 @@ API'en skal overholde routesne beskrevet i `Routes overview`
 - `/login` - `POST` Bruger sender login information og modtager en JWT hvis info er korrekt
 - `/user` - `POST` Oprettelse af bruger
 - `/users`
-    - `/` - `GET` Liste af alle brugere
-    - `/{:uid}` - `GET` får specifik bruger
+    - `GET /` Liste af alle brugere
+    - `GET /{:uid}` får specifik bruger
 - `/rooms`
-    - `/` - list all roles
-    - `/{:uid}` - view room details
+    - `GET /` - list all roles
+    - `GET /{:uid}` - view room details
+    - `POST /rooms/{:uid}`–create room. Accessible for roles `manager`
+    - `PATCH /rooms/{:uid}`–modify room. Accessible for roles `manager`, `clerk`
+    - `DELETE /rooms/{:uid}`–delete room. Accessible for roles `manager`
 - `/reservations`
     - `GET /` - List all reservations. 
         - Accessible for roles `manager` and `clerk`
