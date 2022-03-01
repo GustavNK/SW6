@@ -4,7 +4,7 @@ import { decode } from 'jsonwebtoken'
 
 const router = Router()
 
-const requirePermission = function (perm: PERMISSIONS) {
+export const requirePermission = function (perm: PERMISSIONS) {
     return (req: Request, res: Response, next: NextFunction) => {
         const token = JSON.parse(req.get('authorization') ?? '')?.bearer;
         const payload = decode(token, {json: true});

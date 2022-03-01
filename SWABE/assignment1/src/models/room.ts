@@ -8,4 +8,8 @@ export type Room = {
     roleNeeded: PERMISSIONS
 }
 
-export const RoomS = new Schema<Room>();
+export const RoomS = new Schema<Room>({
+    number: {type: Number, required: true},
+    roleNeeded: {type: Number, required: true}
+}
+);

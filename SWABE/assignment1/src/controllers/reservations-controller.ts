@@ -1,29 +1,27 @@
 import { Request, Response } from 'express'
-import mongoose from 'mongoose'
+import * as mongoose from 'mongoose'
 
 import { ReservationsS } from '../models/reservation'
 
-const hotelConnection = mongoose.createConnection('mongodb://localhost:27017/hotel');
-const reservationModel = hotelConnection.model('Reservations',ReservationsS);
+// const hotelConnection = mongoose.createConnection('mongodb://localhost:27017/hotel');
+export const reservationModel = mongoose.model('Reservations',ReservationsS);
 
 export class Reservation{
-    static list(req: Request, res: Response) {
-        const {from, to, ...etcFilter} = req.body;
+    static async list(req: Request, res: Response): Promise<Reservation[]> {
+        const {from, to} = req.body;
         let filter = {};
 
-        if(from && to) {
-            filter = { ...filter, ts: { $gt: from, $lt: to }}
-          } else {
-            if(from) {
-              filter = { ...filter, ts: { $gt: from }}
-            }
-            if(to) {
-              filter = { ...filter, ts: { $lt: to }}
-            }
-          }
-    
-        let result = reservationModel.find(filter).lean();
-        res.json(result);
+        if(from) {
+            filter = { ...filter, startDate: { $gt: from }}
+        }
+
+        if(to) {
+            filter = { ...filter, endDate: { $lt: to }}
+        }
+
+        let result = await reservationModel.find(filter);
+        res.status(200).json(result);
+        return result;
     }
 
     static async read(req: Request, res: Response) {
@@ -31,27 +29,55 @@ export class Reservation{
         
         let result = await reservationModel.findById(uid);
         res.status(201).json(result);
-    }    
+    }
+    /**
+     * Req type: POST
+     * 
+     */
     static async create(req: Request, res: Response) {
-        const {roomId, startDate, endDate} = req.body
-        let {id} = await new reservationModel({roomId: roomId, startDate: startDate, endDate: endDate}).save();
-        res.json(id);
+        const roomId =req.params['uid'];
+        const {startDate, endDate} = req.body;
+        try {
+            let {id} = await new reservationModel({roomId: roomId, startDate: startDate, endDate: endDate}).save();
+            res.json(id);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
     }
 
-    static update(req: Request, res: Response) {
-        throw new Error('Method not implemented.')
-    }
-    static remove(req: Request, res: Response) {
-        let {_id} = req.body;
+    static async update(req: Request, res: Response) {
+        const _id =req.params['uid'];
+        let newData = req.body;
         if(!_id){
             res.status(400).json('No ID given');
         }
-
         try {
-            let result = reservationModel.findByIdAndDelete(_id);            
-            if(result.amount <1){
+            let result = await reservationModel.findByIdAndUpdate(_id, newData, {new: true});
+            console.log("New reservation: ", result);
+              
+            if(!result){
+                res.status(400).json('No reservations found. ID didnt match anything');
+            }else {
+                res.status(200).json(result);  
+            }
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    }
+    static async remove(req: Request, res: Response) {
+        const _id =req.params['uid'];
+        if(!_id){
+            res.status(400).json('No ID given');
+            return;
+        }
+        try {
+            let result = await reservationModel.findByIdAndDelete(_id);
+            if(result != null){
                 res.status(400).json('No models deleted. ID didnt match anything');
-            }    
+                return
+            } 
+            res.status(200).json('Document succesfully deleted');
         } catch (error) {
             res.status(500).json(error);
         }
