@@ -11,14 +11,13 @@ export const enum PERMISSIONS {
 export const requirePermission = function (...perms: PERMISSIONS[]) {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
-            const token = req.headers['authorization'] ?? '';
+            const token = req.headers['authorization']?.split(' ')[1] ?? '';
             if(typeof token === 'undefined'){
                 throw new Error("No bearer token");
             }
-            verify(token,PRIVATE_KEY);
+            verify(token,PRIVATE_KEY,{algorithms:['RS256']});
             // token.split(' ')[1] is to get the token after the definition 'Bearer <token>'
-            const payload = decode(token.split(' ')[1], { json: true });
-            console.log(token, payload); // DEV: Check what token and payload becomes and if its correct
+            const payload = decode(token, { json: true });
             //Verify payload with method
             if (perms.includes(payload?.permissions)) {
                 next();
