@@ -20,7 +20,7 @@ export const userModel = mongoose.model('User',UserS);
 
 export class Authentications{
     //List all user IDS
-    static async list(res: Response) {
+    static async list(_: Request, res: Response) {
         //find all
         let result = await userModel.find().lean();
         res.status(200).json(result);
