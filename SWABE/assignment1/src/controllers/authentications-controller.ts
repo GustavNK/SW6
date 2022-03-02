@@ -1,7 +1,5 @@
 import { Request, Response } from 'express'
 import * as mongoose from 'mongoose'
-import { readFile } from 'fs'
-import { join } from 'path'
 import { sign } from 'jsonwebtoken'
 import { User, UserS, Name } from '../models/user'
 
