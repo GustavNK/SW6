@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
-import { decode } from 'jsonwebtoken'
+import { decode, verify } from 'jsonwebtoken'
+import { PRIVATE_KEY } from '.';
 
 export const enum PERMISSIONS {
     MANAGER = 1,
@@ -14,6 +15,7 @@ export const requirePermission = function (...perms: PERMISSIONS[]) {
             if(typeof token === 'undefined'){
                 throw new Error("No bearer token");
             }
+            verify(token,PRIVATE_KEY);
             // token.split(' ')[1] is to get the token after the definition 'Bearer <token>'
             const payload = decode(token.split(' ')[1], { json: true });
             console.log(token, payload); // DEV: Check what token and payload becomes and if its correct

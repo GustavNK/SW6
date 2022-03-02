@@ -37,6 +37,16 @@ export class Reservation{
     static async create(req: Request, res: Response) {
         const roomId =req.params['uid'];
         const {startDate, endDate} = req.body;
+        let filter = {};
+        filter = {roomId: {$eq: roomId},
+            $or: [{startDate: { $gte: startDate, $lte: endDate }},{endDate: { $gte: startDate, $lte: endDate }}]
+        }
+        let room = await reservationModel.find(filter);
+        if(room.length !== 0){
+            res.status(400).json("Can't make new reservation, there is already one reservation in the timeframe");
+            return
+        }
+     
         try {
             let {id} = await new reservationModel({roomId: roomId, startDate: startDate, endDate: endDate}).save();
             res.json(id);

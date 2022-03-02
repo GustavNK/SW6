@@ -6,14 +6,13 @@ import { sign } from 'jsonwebtoken'
 import { User, UserS, Name } from '../models/user'
 
 import { randomBytes, pbkdf2, SALT_LENGTH, DIGEST, ITERATIONS, KEY_LENGTH } from '../utils/crypto-settings';
+import { PRIVATE_KEY } from '..'
 export enum PERMISSIONS{
     MANAGER = 1,
     CLERK,
     GUEST
 }
 
-const PATH_PRIVATE_KEY = join(__dirname, '..', '..', 'auth-rsa256.key');
-//const PATH_PUBLIC_KEY = join(__dirname, '..', '..', 'public', 'auth-rsa256.key.pub');
 const X5U = 'http://localhost:3000/auth-rsa256.key.pub'
 
 // const hotelConnection = mongoose.createConnection('mongodb://localhost:27017/hotel');
@@ -60,21 +59,15 @@ export class Authentications{
         if(user != null){
             if(await user.password.isPasswordValid(password)){
                 //Anvend private key
-                readFile(PATH_PRIVATE_KEY,(err,privateKey)=>{
-                    if(err){
-                        res.status(500);
-                    } else{
-                        sign({ userId: user!._id, email, permissions: user!.permissions }, privateKey, { expiresIn: '1h', header: { alg: 'RS256', x5u: X5U} }, (err, token) => {
-                            if(err) {
-                                res.status(500).json({
-                                    message: err.message
-                                })
-                            } else {
-                                res.status(200).json({ token })
-                            }
+                sign({ userId: user!._id, email, permissions: user!.permissions }, PRIVATE_KEY, { expiresIn: '1h', header: { alg: 'RS256', x5u: X5U} }, (err, token) => {
+                    if(err) {
+                        res.status(500).json({
+                            message: err.message
                         })
+                    } else {
+                        res.status(200).json({ token })
                     }
-                });
+                })
             } else{
                 res.status(403);
             }
