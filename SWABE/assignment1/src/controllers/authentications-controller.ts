@@ -5,11 +5,7 @@ import { User, UserS, Name } from '../models/user'
 
 import { randomBytes, pbkdf2, SALT_LENGTH, DIGEST, ITERATIONS, KEY_LENGTH } from '../utils/crypto-settings';
 import { PRIVATE_KEY } from '..'
-export enum PERMISSIONS{
-    MANAGER = 1,
-    CLERK,
-    GUEST
-}
+import { PERMISSIONS } from '../PermissionsExtensions';
 
 const X5U = 'http://localhost:3000/auth-rsa256.key.pub'
 
@@ -27,7 +23,12 @@ export class Authentications{
     //View user by userid
     static async read(req: Request, res: Response) {
         const {uid} = req.params;
-        let result  = await userModel.findById(uid, {__v:0}).exec()
+        let result  = await userModel.findById(uid);
+        if(!result){
+            res.status(404);
+        }else{
+            res.status(200).json(result);
+        }
         res.status(200).json(result);
     }
     

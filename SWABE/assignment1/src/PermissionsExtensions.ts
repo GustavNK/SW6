@@ -7,6 +7,7 @@ export const enum PERMISSIONS {
     CLERK,
     GUEST
 }
+export const ALLPERMS: PERMISSIONS[] = [PERMISSIONS.MANAGER, PERMISSIONS.CLERK, PERMISSIONS.GUEST];
 
 export const requirePermission = function (...perms: PERMISSIONS[]) {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -20,6 +21,8 @@ export const requirePermission = function (...perms: PERMISSIONS[]) {
             const payload = decode(token, { json: true });
             //Verify payload with method
             if (perms.includes(payload?.permissions)) {
+                // Enhance the req body with the 
+                req.body.payload = payload;
                 next();
             } else {
                 res.status(401);
