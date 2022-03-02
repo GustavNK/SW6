@@ -1,12 +1,15 @@
-import express from 'express'
-import https from 'https'
+import express = require("express");
+import {Response} from 'express';
+import https = require('https');
 import helmet from 'helmet'
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+//import path from 'path';
+import * as path from 'path'
 import { authentications } from './routes/authentications-router'
 import { reservations } from './routes/reservations-router'
 import { rooms } from './routes/rooms-router'
-import bodyParser from 'body-parser'
+import * as bodyParser from 'body-parser'
+import mongoose = require('mongoose');
 
 const app = express();
 const port = 3000;
@@ -26,12 +29,15 @@ app.use('/', authentications);
 app.use('/reservations',reservations);
 app.use('/rooms',rooms);
 
+mongoose.connect('mongodb://localhost:27017/hotel');
+
 /*********************************************************
     ! LÆS STATUS.MD - TODO list og andre mangler/fejl !
 *********************************************************/
 
-app.get('',(req,res) =>{
-    res.json({
+app.get('',(_, res: Response) =>{
+    
+    res.status(200).json({
         'message': 'Dette er et hotel ❤️'
     })
 })
@@ -41,7 +47,7 @@ https.createServer(options,app).listen(httpsPort, () => {
 })
 
 app.listen(port,() => {
-console.log(`Running hotel management system on ${port}`);
+    console.log(`Running hotel management system on ${port}`);
 })
 
 

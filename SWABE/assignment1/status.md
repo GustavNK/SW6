@@ -4,9 +4,12 @@ API'en skal overholde routesne beskrevet i `Routes overview`
 
 ## TODO
 - Rooms
-- Reservations
+    - Check if list gets correct if filtering by availability. Now it should be the ones that is not currently in use/reserved.
+- General look around in code for errors or console logs
+- Test 1 last time.
 
 ## Complete
+- Reservations
 - User/authentication
 
 # Routes overview

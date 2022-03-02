@@ -1,7 +1,7 @@
-import { ObjectID, ObjectId } from "mongodb";
 import { Schema } from "mongoose";
 import { PERMISSIONS } from "../PermissionsExtensions";
 import { DIGEST, ITERATIONS, KEY_LENGTH, pbkdf2 } from '../utils/crypto-settings';
+import { ObjectId } from "mongodb";
 
 export interface Password {
     hash: string,
@@ -17,7 +17,7 @@ export interface Name {
 }
 
 export interface User {
-    //_id: ObjectId,
+    _id: ObjectId,
     name: Name,
     email: string,
     password: Password,
