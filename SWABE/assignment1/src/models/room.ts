@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose'
 import { ObjectId } from 'mongodb';
-import { PERMISSIONS } from '../controllers/authentications-controller';
+import { PERMISSIONS } from '../PermissionsExtensions';
 
 export type Room = {
     _id: ObjectId,

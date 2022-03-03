@@ -51,7 +51,11 @@ export class Rooms{
         const _id = req.params['uid'];
         try {
             let result = await roomModel.find({_id}).exec();
-            res.status(200).json(result); 
+            if(result.length < 1){
+                res.status(404);
+            }else{
+                res.status(200).json(result);
+            }
         } catch (error) {
             console.log(error);
             res.status(500).json(error);

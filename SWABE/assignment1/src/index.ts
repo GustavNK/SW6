@@ -19,6 +19,9 @@ const options = {
     cert: fs.readFileSync(path.join(__dirname, '../selfsigned.crt'))
 };
 
+export const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..', 'auth-rsa256.key'));
+export const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..', 'public', 'auth-rsa256.key.pub'));
+
 app.use(express.static('public'));
 app.use(helmet());
 

@@ -20,15 +20,33 @@ export class Reservation{
         }
 
         let result = await reservationModel.find(filter);
+
         res.status(200).json(result);
         return result;
     }
 
     static async read(req: Request, res: Response) {
         const {uid} = req.params;
+        let filter = {};
+        filter = {...filter, _id: uid};
+
+        if(req.body.payload.permissions === 3){
+            filter = {...filter, createdByUser: req.body.payload.userId}
+        } 
+        try {
+            let result = await reservationModel.find(filter);
+            if(result.length < 1){
+                res.status(404).json();
+                return;
+            }else{
+                res.status(200).json(result);
+                return;
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(error);
+        }
         
-        let result = await reservationModel.findById(uid);
-        res.status(201).json(result);
     }
     /**
      * Req type: POST
@@ -37,9 +55,26 @@ export class Reservation{
     static async create(req: Request, res: Response) {
         const roomId =req.params['uid'];
         const {startDate, endDate} = req.body;
+        let filter = {};
+        filter = {roomId: {$eq: roomId},
+            $or: [
+                {startDate: { $lte: startDate, $gte: endDate }},
+                {endDate: { $gte: startDate, $lte: endDate }},
+                {
+                    startDate: {$lte: endDate, $gte: startDate},
+                    endDate: { $lte: startDate, $gte: endDate }
+                },
+            ]
+        }
+        let room = await reservationModel.find(filter);
+        if(room.length !== 0){
+            res.status(400).json("Can't make new reservation, there is already one reservation in the timeframe");
+            return
+        }
+     
         try {
-            let {id} = await new reservationModel({roomId: roomId, startDate: startDate, endDate: endDate}).save();
-            res.json(id);
+            let result = await new reservationModel({roomId: roomId, startDate: startDate, endDate: endDate, createdByUser: req.body.payload.userId}).save();
+            res.json(result);
         } catch (error) {
             console.log(error);
             res.status(500).json(error);
@@ -49,11 +84,17 @@ export class Reservation{
     static async update(req: Request, res: Response) {
         const _id =req.params['uid'];
         let newData = req.body;
+        let filter = {};
+        filter = {...filter, _id};
+
+        if(req.body.payload.permissions === 3){
+            filter = {...filter, createdByUser: req.body.payload.userId}
+        } 
         if(!_id){
             res.status(400).json('No ID given');
         }
         try {
-            let result = await reservationModel.findByIdAndUpdate(_id, newData, {new: true});
+            let result = await reservationModel.findOneAndUpdate(filter, newData, {new: true});
             console.log("New reservation: ", result);
               
             if(!result){
