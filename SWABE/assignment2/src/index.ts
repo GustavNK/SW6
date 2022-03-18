@@ -39,7 +39,7 @@ async function main(){
 
     server.use('/graphql', (_, __) => {
         const loaders = {
-          users: new DataLoader((userIds) => pgApi.queries.usersInfo(userIds))
+          users: new DataLoader((userIds: readonly string[]) => pgApi.queries.usersInfo(userIds))
         };
         graphqlHTTP({
           schema,
