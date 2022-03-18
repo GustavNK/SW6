@@ -8,7 +8,7 @@ export const pgApiWrapper = async () => {
     pgPool.query(text, Object.values(params));
     return {
         queries: {
-            usersInfo: async (userIds: string[]) => {
+            usersInfo: async (userIds: readonly string[]) => {
                 const pgResp = await pgQuery(
                     `
                     `
