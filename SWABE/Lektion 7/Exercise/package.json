@@ -1,0 +1,15 @@
+{
+  "name": "rabbitmq",
+  "version": "1.0.0",
+  "description": "exercise for rabbitmq",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "send": "send.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.8.0",
+    "nodejs": "^0.0.0"
+  }
+}
