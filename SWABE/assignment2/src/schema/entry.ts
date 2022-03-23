@@ -1,9 +1,10 @@
-// import { GraphQLSchema, printSchema } from 'graphql';
+import { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString, printSchema } from 'graphql';
+import { pgApiWrapper } from '../db/pg-api';
+import MutationType from './mutations';
+import QueryType from './queries';
 
-// import QueryType from './queries';
-// import MutationType from './mutations';
+export const schema = new GraphQLSchema({
+    query: QueryType,
+    mutation: MutationType,
+});
 
-// export const schema = new GraphQLSchema({
-//   query: QueryType,
-//   mutation: MutationType,
-// });

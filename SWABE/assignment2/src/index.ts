@@ -1,69 +1,53 @@
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
-// //import { schema } from './schema/entry'; // Commented until local schema is no longer in use
+import { schema } from './schema/entry';
 import express = require("express");
-// import cors from 'cors';
-// import morgan =  require('morgan');
+import cors from 'cors';
 import * as config from './config';
 import { pgApiWrapper } from './db/pg-api';
 import DataLoader = require("dataloader");
+import morgan from 'morgan';
 
+async function main() {
+	const server = express();
+	const pgApi = await pgApiWrapper();
 
-let schema = buildSchema(
-    `
-    type Query {
-        hello: String
-    }
-    `
-);
+  server.use(cors());
+  server.use(morgan('dev'));
+  server.use(express.urlencoded({ extended: false }));
+  server.use(express.json());
+  server.use('/:fav.ico', (req, res) => res.sendStatus(204));
 
-// let root = {
-//     hello: function() {
-//         return "Hello World! poopoopeepee, haha, funny!"
-//     }
-// }
+	server.use('/graphql', async (req, res) => {
+		const loaders = {
+			users: new DataLoader((userIds: readonly string[]) => pgApi.queries.usersInfo(userIds))
+		};
+		const mutators = {
+			...pgApi.mutators
+		}
+		graphqlHTTP({
+			schema,
+			context: { loaders, mutators },
+			graphiql: true,
+			customFormatErrorFn: (err) => {
+				const errorReport = {
+					message: err.message + "HELLO",
+					locations: err.locations,
+					stack: err.stack ? err.stack.split('\n') : [],
+					path: err.path,
+				};
+				console.error('GraphQL Error', errorReport);
+				return config.isDev
+					? errorReport
+					: { message: 'Oops Woopsie! Sumthing wuent veery bad! :(' };
+			},
+		})(req, res);
+	});
 
-async function main(){
-    const server = express();
-    const pgApi = await pgApiWrapper();
+	server.listen(config.PORT, () => {
+		console.log(`Server URL: http://localhost:${config.PORT}/`);
+	});
 
-    // server.use('/graphql', graphqlHTTP({
-    //     schema: schema,
-    //     rootValue: root,
-    //     graphiql: true
-    // }));
-
-    // server.use(cors());
-    // server.use(express.urlencoded({ extended: false }));
-    // server.use(express.json());
-
-    server.use('/graphql', (_, __) => {
-        const loaders = {
-          users: new DataLoader((userIds: readonly string[]) => pgApi.queries.usersInfo(userIds))
-        };
-        graphqlHTTP({
-          schema,
-          context: { pgApi, loaders },
-          graphiql: true,
-          customFormatErrorFn: (err) => {
-            const errorReport = {
-              message: err.message,
-              locations: err.locations,
-              stack: err.stack ? err.stack.split('\n') : [],
-              path: err.path,
-            };
-            console.error('GraphQL Error', errorReport);
-            return config.isDev
-              ? errorReport
-              : { message: 'Oops! Something went wrong! :(' };
-          },
-        });
-      });
-    
-      server.listen(config.PORT, () => {
-        console.log(`Server URL: http://localhost:${config.PORT}/`);
-      });
-    
 }
 
 
