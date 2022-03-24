@@ -166,6 +166,16 @@ unsigned char SD_sendCommand(unsigned char cmd, unsigned long arg)
 //*****************************************************************
 unsigned char SD_erase (unsigned long startBlock, unsigned long numberOfBlocks)
 {
+	unsigned char response;
+	//Data Address
+	response = SD_sendCommand(ERASE_BLOCK_START_ADDR, startBlock);
+	if(response > 0x0) {return response;}
+	response = SD_sendCommand(ERASE_BLOCK_END_ADDR, startBlock+numberOfBlocks);
+	if(response > 0x0) {return response;}
+	response = SD_sendCommand(ERASE_SELECTED_BLOCKS,0);
+	if(response > 0x0) {return response;}
+	
+	return 0;
   // To be implemented
 }
 
@@ -177,7 +187,22 @@ unsigned char SD_erase (unsigned long startBlock, unsigned long numberOfBlocks)
 //******************************************************************
 unsigned char SD_readSingleBlock(unsigned long startBlock, unsigned char* ptr)
 {
-  // To be implemented
+	unsigned char response;
+	response = SD_sendCommand(READ_SINGLE_BLOCK,startBlock);
+	//Forventer response giver block token tilbage når den kommer kan vi aflæse spi
+	//Block
+	while(response != 0b11111110){
+		response = SD_sendCommand(READ_SINGLE_BLOCK,startBlock);
+	}
+		
+	//Read 512 bytes
+	for(int i = 0; i < 512; i++){
+		*ptr = SPI_receive();
+		ptr++;
+	}
+	//Read CRC Dummy
+	unsigned char dummy = SPI_receive();
+	return 0;
 }
 
 //******************************************************************
@@ -188,5 +213,25 @@ unsigned char SD_readSingleBlock(unsigned long startBlock, unsigned char* ptr)
 //******************************************************************
 unsigned char SD_writeSingleBlock(unsigned long startBlock, unsigned char* ptr)
 {
-  // To be implemented
+	unsigned char response;
+	//Send Write single block
+	response = SD_sendCommand(WRITE_SINGLE_BLOCK,startBlock);
+	if(response > 0x0) {return response;}	
+	//Send 0b11111110 BLOCK TOKEN
+	//Select chip
+	SPI_Chip_Select();
+	SPI_transmit(0b11111110);
+	
+	//Send 512 bytes
+	for(int i = 0; i < 512; i++){
+		SPI_transmit(*ptr);
+		ptr++;
+	}
+	//Send dummy crc
+	SPI_transmit(0xff);
+	// Afvent IDLE Response
+	while (SPI_receive() == 0)
+	{}
+	SPI_Chip_Deselect();
+	return 0;
 }
