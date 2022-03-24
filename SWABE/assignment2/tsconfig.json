@@ -4,8 +4,9 @@
       "preserveConstEnums": true,
       "allowUnreachableCode": false,
       //"noUnusedLocals": true,
-      "strictNullChecks": true,
+      //"strictNullChecks": true,
       //"noUnusedParameters": true,
+      "noImplicitAny": false,
       "outDir": "dist",
       "sourceMap": true
     },
