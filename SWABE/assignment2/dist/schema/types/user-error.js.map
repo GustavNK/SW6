@@ -1,1 +1,0 @@
-{"version":3,"file":"user-error.js","sourceRoot":"","sources":["../../../src/schema/types/user-error.ts"],"names":[],"mappings":";;AAAA,qCAImB;AAEjB,MAAM,SAAS,GAAG,IAAI,2BAAiB,CAAC;IACtC,IAAI,EAAE,WAAW;IACjB,MAAM,EAAE,GAAG,EAAE,CAAC,CAAC;QACb,OAAO,EAAE;YACP,IAAI,EAAE,IAAI,wBAAc,CAAC,uBAAa,CAAC;SACxC;KACF,CAAC;CACH,CAAC,CAAC;AAEH,kBAAe,SAAS,CAAC"}

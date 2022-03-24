@@ -1,5 +1,7 @@
 **/bin/Debug/
 **/obj/
+**/dist/
 node_modules
 package-lock.json
 .ionide/
+.fake
