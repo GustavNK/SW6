@@ -5,12 +5,17 @@ import {
     GraphQLNonNull,
     GraphQLList,
     GraphQLInt,
+    GraphQLBoolean,
 } from 'graphql';
 
 const fieldsWrapper = () => {
     const roomField = {
-        id: {type: new GraphQLNonNull(GraphQLID)}, 
-        number:{type: new GraphQLNonNull(GraphQLInt)}
+        id:             {type: new GraphQLNonNull(GraphQLID)},
+        floor:          {type: GraphQLInt},
+        hasRoomService: {type: GraphQLBoolean},
+        hasPool:        {type: GraphQLBoolean},
+        hasView:        {type: GraphQLBoolean},
+        number:         {type: new GraphQLNonNull(GraphQLInt)}
     }
     return roomField;
 }

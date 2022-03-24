@@ -1,32 +1,54 @@
-import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
-import { schema } from './schema/entry';
+import { graphqlHTTP } from "express-graphql";
+import { buildSchema } from "graphql";
+import { schema } from "./schema/entry";
 import express = require("express");
-import cors from 'cors';
-import * as config from './config';
-import { pgApiWrapper } from './db/pg-api';
+import cors from "cors";
+import * as config from "./config";
+import { pgApiWrapper } from "./db/pg-api";
 import DataLoader = require("dataloader");
-import morgan from 'morgan';
+import morgan from "morgan";
 
 async function main() {
 	const server = express();
 	const pgApi = await pgApiWrapper();
 
-  server.use(cors());
-  server.use(morgan('dev'));
-  server.use(express.urlencoded({ extended: false }));
-  server.use(express.json());
-  server.use('/:fav.ico', (req, res) => res.sendStatus(204));
+	await pgApi.setup.createUserTable();
+	console.log('User table created');
+	await pgApi.setup.createRoomTable();
+	console.log('Room table created');
+	await pgApi.setup.createReservationTable();
+	console.log('Reservation table created');
+	/*
+		ONLY USE WHEN FIRST TIME
+	*/
+	//await pgApi.setup.insertData();
+	//console.log('Inserted dummy data');
 
-	server.use('/graphql', async (req, res) => {
+
+	server.use(cors());
+	//server.use(morgan("dev"));
+	server.use(express.urlencoded({ extended: false }));
+	server.use(express.json());
+	//server.use("/:fav.ico", (req, res) => res.sendStatus(204));
+
+	server.use("/graphql", async (req, res) => {
 		const loaders = {
-			userInfo: new DataLoader((userId) => 
-				pgApi.queries.usersInfo(userId)
-			),
+			userInfo: new DataLoader((userId: readonly number[]) => {
+				console.log(userId);
+				return pgApi.queries.usersInfo(userId)
+			}),
+			getReservation: new DataLoader((reservationId: readonly number[]) => {
+				console.log(reservationId);
+				return pgApi.queries.getReservation(reservationId)
+			}),
+			getRoom: new DataLoader((roomId: readonly number[]) => {
+				console.log(roomId);
+				return pgApi.queries.getRoom(roomId)
+			}),
 		};
 		const mutators = {
-			...pgApi.mutators
-		}
+			...pgApi.mutators,
+		};
 		graphqlHTTP({
 			schema,
 			context: { loaders, mutators, pgApi },
@@ -35,13 +57,13 @@ async function main() {
 				const errorReport = {
 					message: err.message,
 					locations: err.locations,
-					stack: err.stack ? err.stack.split('\n') : [],
+					stack: err.stack ? err.stack.split("\n") : [],
 					path: err.path,
 				};
-				console.error('GraphQL Error', errorReport);
+				console.error("GraphQL Error", errorReport);
 				return config.isDev
 					? errorReport
-					: { message: 'Oops Woopsie! Sumthing wuent veery bad! :(' };
+					: { message: "Oops Woopsie! Sumthing wuent veery bad! :(" };
 			},
 		})(req, res);
 	});
@@ -49,8 +71,6 @@ async function main() {
 	server.listen(config.PORT, () => {
 		console.log(`Server URL: http://localhost:${config.PORT}/`);
 	});
-
 }
-
 
 main();

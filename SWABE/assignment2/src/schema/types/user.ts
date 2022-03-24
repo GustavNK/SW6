@@ -2,23 +2,14 @@ import {
     GraphQLID,
     GraphQLObjectType,
     GraphQLString,
-    GraphQLNonNull,
-    GraphQLList,
+    GraphQLNonNull
 } from 'graphql';
 
-//import Task from './task';
-type permissions = 'admin' | 'manager' | 'clerk';
-
-
-const fieldsWrapper = ({ role }) => {
+const fieldsWrapper = () => {
     const userFields = {
         id: { type: new GraphQLNonNull(GraphQLID) },
         username: { type: GraphQLString },
-        name: {
-            type: new GraphQLNonNull(GraphQLString),
-            resolve: ({ firstName, lastName }) =>
-                [firstName, lastName].filter(Boolean).join(' '),
-        },
+        name: { type: new GraphQLNonNull(GraphQLString)},
         // reservations: {
         //     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Reservation))),
         //     resolve: (source, args, { loaders, currentUser }) => {
@@ -26,31 +17,14 @@ const fieldsWrapper = ({ role }) => {
         //     }
         // }
     };
-
-    // if (role) {
-    //     userFields.taskList = {
-    //         type: new GraphQLNonNull(
-    //             new GraphQLList(new GraphQLNonNull(Task))
-    //         ),
-    //         resolve: (source, args, { loaders, currentUser }) => {
-    //             return loaders.tasksForUsers.load(currentUser.id);
-    //         },
-    //     };
-    // }
-
     return userFields;
 };
 
 const User = new GraphQLObjectType({
     name: 'User',
-    fields: () => fieldsWrapper({ role: false }),
+    fields: () => fieldsWrapper(),
 });
 
 export type UserType = typeof User
-
-export const Me = new GraphQLObjectType({
-    name: 'Me',
-    fields: () => fieldsWrapper({ role: true }),
-});
 
 export default User;
