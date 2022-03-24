@@ -54,16 +54,16 @@ function main() {
         server.use('/:fav.ico', (req, res) => res.sendStatus(204));
         server.use('/graphql', (req, res) => __awaiter(this, void 0, void 0, function* () {
             const loaders = {
-                users: new DataLoader((userIds) => pgApi.queries.usersInfo(userIds))
+                userInfo: new DataLoader((userId) => pgApi.queries.usersInfo(userId)),
             };
             const mutators = Object.assign({}, pgApi.mutators);
             (0, express_graphql_1.graphqlHTTP)({
                 schema: entry_1.schema,
-                context: { loaders, mutators },
+                context: { loaders, mutators, pgApi },
                 graphiql: true,
                 customFormatErrorFn: (err) => {
                     const errorReport = {
-                        message: err.message + "HELLO",
+                        message: err.message,
                         locations: err.locations,
                         stack: err.stack ? err.stack.split('\n') : [],
                         path: err.path,

@@ -9,5 +9,6 @@ services:
       - '5432:5432'
     environment:
       - POSTGRES_DB=azdev
+      - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - PGDATA=azdev-data

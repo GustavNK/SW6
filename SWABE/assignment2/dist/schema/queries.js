@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_1 = require("graphql");
+const user_1 = __importDefault(require("./types/user"));
 const QueryType = new graphql_1.GraphQLObjectType({
     name: 'Query',
     fields: {
@@ -20,11 +24,22 @@ const QueryType = new graphql_1.GraphQLObjectType({
                 return isoString.slice(11, 19);
             },
         },
-        Users: {
-            type: graphql_1.GraphQLID,
-            resolve: (source, userid, context) => __awaiter(void 0, void 0, void 0, function* () {
-                console.log(source, userid, context);
-                return yield context.loaders.users(userid);
+        UserInfo: {
+            type: graphql_1.GraphQLInt,
+            args: {
+                id: { type: new graphql_1.GraphQLNonNull(graphql_1.GraphQLInt) }
+            },
+            resolve: (source, args, { loaders }) => __awaiter(void 0, void 0, void 0, function* () {
+                console.log(source, "SOURCE");
+                console.log(args, "ARGS");
+                console.log(loaders, "CONTEXT");
+                return yield loaders.userInfo.load(args.id);
+            })
+        },
+        getAllUsers: {
+            type: new graphql_1.GraphQLList(new graphql_1.GraphQLNonNull(user_1.default)),
+            resolve: (source, args, { pgApi }) => __awaiter(void 0, void 0, void 0, function* () {
+                return yield pgApi.queries.getAllUsers();
             })
         },
         name: {

@@ -20,18 +20,20 @@ async function main() {
 
 	server.use('/graphql', async (req, res) => {
 		const loaders = {
-			users: new DataLoader((userIds: readonly string[]) => pgApi.queries.usersInfo(userIds))
+			userInfo: new DataLoader((userId) => 
+				pgApi.queries.usersInfo(userId)
+			),
 		};
 		const mutators = {
 			...pgApi.mutators
 		}
 		graphqlHTTP({
 			schema,
-			context: { loaders, mutators },
+			context: { loaders, mutators, pgApi },
 			graphiql: true,
 			customFormatErrorFn: (err) => {
 				const errorReport = {
-					message: err.message + "HELLO",
+					message: err.message,
 					locations: err.locations,
 					stack: err.stack ? err.stack.split('\n') : [],
 					path: err.path,

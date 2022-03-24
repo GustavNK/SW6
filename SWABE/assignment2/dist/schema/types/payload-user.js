@@ -13,7 +13,7 @@ const UserPayload = new graphql_1.GraphQLObjectType({
             type: new graphql_1.GraphQLNonNull(new graphql_1.GraphQLList(new graphql_1.GraphQLNonNull(user_error_1.default))),
         },
         user: { type: user_1.default },
-        //authToken: { type: GraphQLString },
+        authToken: { type: graphql_1.GraphQLString },
     }),
 });
 exports.default = UserPayload;

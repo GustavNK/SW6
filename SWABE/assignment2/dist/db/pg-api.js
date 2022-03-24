@@ -21,20 +21,30 @@ const pgApiWrapper = () => __awaiter(void 0, void 0, void 0, function* () {
     return {
         queries: {
             usersInfo: (userIds) => __awaiter(void 0, void 0, void 0, function* () {
-                const pgResp = yield pgQuery(sqls_1.default.usersFromIds, { $1: userIds });
+                console.log("Inside usersInfo");
+                const pgResp = yield pgQuery(sqls_1.default.userFromId, {
+                    $1: userIds
+                });
                 return userIds.map((userId) => pgResp.rows.filter((row) => userId === row.userId));
             }),
+            getAllUsers: () => __awaiter(void 0, void 0, void 0, function* () {
+                console.log("Inside getAllUsers");
+                const pgResp = yield pgQuery(sqls_1.default.getAllUsers);
+                return pgResp.rows;
+            })
         },
         mutators: {
             userCreate: (input) => __awaiter(void 0, void 0, void 0, function* () {
-                console.log(input);
+                const payload = { user: "" };
                 const pgResp = yield pgQuery(sqls_1.default.userInsert, {
                     $1: input.username.toLowerCase(),
-                    $2: input.password,
-                    $3: input.firstName,
-                    $4: input.lastName,
+                    $2: input.firstName,
+                    $3: input.lastName,
                 });
-                return pgResp;
+                if (pgResp.rows[0]) {
+                    payload.user = pgResp.rows[0];
+                }
+                return payload;
             }),
         },
     };
