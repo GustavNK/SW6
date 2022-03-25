@@ -5,3 +5,5 @@ node_modules
 package-lock.json
 .ionide/
 .fake
+SWABE/Lektion 8/RabbitMQ queue and exchange patterns.pdf
+SWABE/Lektion 8/rabbit-demos.js/
