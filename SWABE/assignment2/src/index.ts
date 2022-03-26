@@ -21,8 +21,12 @@ async function main() {
 	/*
 		ONLY USE WHEN FIRST TIME
 	*/
-	//await pgApi.setup.insertData();
-	//console.log('Inserted dummy data');
+	 
+	if (!((await pgApi.queries.getAllUsers()).length)){
+		await pgApi.setup.insertData();
+		console.log('Inserted dummy data');
+	}
+	
 
 
 	server.use(cors());
@@ -33,18 +37,18 @@ async function main() {
 
 	server.use("/graphql", async (req, res) => {
 		const loaders = {
-			userInfo: new DataLoader((userId: readonly number[]) => {
-				console.log(userId);
-				return pgApi.queries.usersInfo(userId)
+			getUser: new DataLoader((userId: readonly number[]) => {
+				return pgApi.queries.getUser(userId)
 			}),
 			getReservation: new DataLoader((reservationId: readonly number[]) => {
-				console.log(reservationId);
 				return pgApi.queries.getReservation(reservationId)
 			}),
 			getRoom: new DataLoader((roomId: readonly number[]) => {
-				console.log(roomId);
 				return pgApi.queries.getRoom(roomId)
 			}),
+			reservationsForUser: new DataLoader((userId: readonly number[]) => {
+				return pgApi.queries.getReservationsByUser(userId)
+			})
 		};
 		const mutators = {
 			...pgApi.mutators,
