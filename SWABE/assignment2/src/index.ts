@@ -18,17 +18,12 @@ async function main() {
 	console.log('Room table created');
 	await pgApi.setup.createReservationTable();
 	console.log('Reservation table created');
-	/*
-		ONLY USE WHEN FIRST TIME
-	*/
 	 
 	if (!((await pgApi.queries.getAllUsers()).length)){
 		await pgApi.setup.insertData();
 		console.log('Inserted dummy data');
 	}
 	
-
-
 	server.use(cors());
 	//server.use(morgan("dev"));
 	server.use(express.urlencoded({ extended: false }));
@@ -73,7 +68,7 @@ async function main() {
 	});
 
 	server.listen(config.PORT, () => {
-		console.log(`Server URL: http://localhost:${config.PORT}/`);
+		console.log(`Server URL: http://localhost:${config.PORT}/graphql`);
 	});
 }
 

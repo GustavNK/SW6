@@ -1,5 +1,4 @@
-import { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString, printSchema } from 'graphql';
-import { pgApiWrapper } from '../db/pg-api';
+import {  GraphQLSchema} from 'graphql';
 import MutationType from './mutations';
 import QueryType from './queries';
 
