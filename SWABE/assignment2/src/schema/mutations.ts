@@ -1,6 +1,7 @@
-import { GraphQLObjectType, GraphQLNonNull } from 'graphql';
-import UserPayload from './types/payload-user';
-import {UserInput} from './types/input-user';
+import { GraphQLObjectType, GraphQLNonNull} from 'graphql';
+import {UserInput, UserPayload} from './types/user';
+import { RoomInput, RoomPayload } from './types/room';
+import { ReservationInput, ReservationPayload } from './types/reservation';
 
 const MutationType = new GraphQLObjectType({
     name: 'Mutation',
@@ -14,6 +15,25 @@ const MutationType = new GraphQLObjectType({
                 return mutators.userCreate(input);
             },
         },
+        roomCreate: {
+            type: new GraphQLNonNull(RoomPayload),
+            args: {
+                input: {type: new GraphQLNonNull(RoomInput)}
+            },
+            resolve: async (source, {input}, {mutators}) => {
+                return mutators.roomCreate(input);
+            }
+        },
+
+        reservationCreate: {
+            type: new GraphQLNonNull(ReservationPayload),
+            args:{
+                input: {type: new GraphQLNonNull(ReservationInput)}
+            },
+            resolve: async (source , {input}, {mutators}) => {
+                return mutators.reservationCreate(input);
+            }
+        }
     })
 });
 export default MutationType;

@@ -4,11 +4,9 @@ services:
     container_name: abe_pg
     image: postgres:latest
     expose:
-      - 5432
+      - 5433
     ports:
-      - '5432:5432'
+      - '5433:5432'
     environment:
-      - POSTGRES_DB=azdev
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - PGDATA=azdev-data

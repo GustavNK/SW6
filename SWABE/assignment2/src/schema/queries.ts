@@ -1,6 +1,5 @@
 
-import { GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString, printSchema } from 'graphql';
-import { resolve } from 'path';
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import Reservation from './types/reservation';
 import Room from './types/room';
 import User from './types/user';
@@ -18,13 +17,13 @@ const QueryType = new GraphQLObjectType({
         /*
             USER QUERIES
         */
-        UserInfo: {
+        getUser: {
             type: User,
             args: {
                 id: { type: new GraphQLNonNull(GraphQLInt) }
             },
             resolve: async (source, args, { loaders }) => {
-                return await loaders.userInfo.load(args.id)
+                return await loaders.getUser.load(args.id)
             }
         },
         getAllUsers: {
