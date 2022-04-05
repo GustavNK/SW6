@@ -1,4 +1,4 @@
-import Reservation, { ReservationType } from '../schema/types/reservation';
+import { ReservationType } from '../schema/types/reservation';
 import pgClient from './pg-client';
 import sqls from './sqls';
 

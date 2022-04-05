@@ -4,7 +4,6 @@ const userFormat = `
   username,
   name
 `
-
 const roomFormat = `
   id,
   number,
@@ -13,7 +12,6 @@ const roomFormat = `
   has_view AS "hasView",
   has_pool AS "hasPool"
 `
-
 const reservationFormat = `
   id,
   created_by_user AS "createdByUser",
@@ -90,6 +88,7 @@ export default {
 		(3, 6, '2022-05-12 19:04:28', '2022-05-12 19:04:29')
     RETURNING ${reservationFormat}
 	`,
+  
 	//-------------------------
 	// QUERIES
 
@@ -138,9 +137,6 @@ export default {
 	VALUES ($1, $2)
 	RETURNING id, username, name
   	`,
-
-	// ------Bach's afdeling start------
-	// ----- Bach's afdeling STOP----- BACH MÅ IKKE SKRIVE ANDRE STEDER -- IK' RØR MINE TING!!!
 
 	//id, number, floor, hasroomservice, hasview, haspool
 	createNewRoom: `

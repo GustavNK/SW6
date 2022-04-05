@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLNonNull, GraphQLID } from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull} from 'graphql';
 import {UserInput, UserPayload} from './types/user';
 import { RoomInput, RoomPayload } from './types/room';
 import { ReservationInput, ReservationPayload } from './types/reservation';

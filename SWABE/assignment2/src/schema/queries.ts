@@ -1,6 +1,5 @@
 
-import { GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString, printSchema } from 'graphql';
-import { resolve } from 'path';
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
 import Reservation from './types/reservation';
 import Room from './types/room';
 import User from './types/user';
