@@ -73,7 +73,7 @@ async function main() {
 	});
 
 	server.listen(config.PORT, () => {
-		console.log(`Server URL: http://localhost:${config.PORT}/`);
+		console.log(`Server URL: http://localhost:${config.PORT}/graphql`);
 	});
 }
 
