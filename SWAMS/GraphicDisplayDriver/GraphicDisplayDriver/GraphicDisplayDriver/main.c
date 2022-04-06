@@ -9,22 +9,22 @@
 #include <util/delay.h>
 #include "TFTdriver.h"
 
-int main(void)
-{
-
-	DisplayInit();
-	DisplayOn();
-	_delay_ms(2000);
-	DisplayOff();
-	_delay_ms(2000);
-	DisplayOn();
-	_delay_ms(2000);
-	DisplayOff();
-	_delay_ms(2000);
-	DisplayOn();
-    /* Replace with your application code */
-    while (1) 
-    {
-    }
-}
+//int main(void)
+//{
+//
+	//DisplayInit();
+	//DisplayOn();
+	//_delay_ms(2000);
+	//DisplayOff();
+	//_delay_ms(2000);
+	//DisplayOn();
+	//_delay_ms(2000);
+	//DisplayOff();
+	//_delay_ms(2000);
+	//DisplayOn();
+    ///* Replace with your application code */
+    //while (1) 
+    //{
+    //}
+//}
 

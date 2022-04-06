@@ -18,6 +18,8 @@
 
   Henning Hargaard, February 15, 2018
 ************************************************************/  
+
+
 void DisplayInit();
 void DisplayOff();
 void DisplayOn();

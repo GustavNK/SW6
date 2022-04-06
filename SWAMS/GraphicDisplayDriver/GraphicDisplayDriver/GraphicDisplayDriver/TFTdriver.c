@@ -63,20 +63,17 @@ void WriteCommand(unsigned char command)
 // ILI 9341 data sheet, page 238
 void WriteData(unsigned int data)
 {
+	DATA_PORT_HIGH = data>>8;
+	DATA_PORT_LOW = data;	
+	BitOn(DC_PORT,DC_BIT);
 	BitOff(CS_PORT,CS_BIT);
-				
-	//Højeste 8 bit			
+					
 	BitOff(WR_PORT,WR_BIT);
-	DATA_PORT_LOW = data>>8;
+	_NOP();
 	BitOn(WR_PORT,WR_BIT);
 	//Wait 100 ms -> 0.5s
-	
-	//laveste 8 bit
-	BitOff(WR_PORT,WR_BIT);
-	DATA_PORT_LOW = data;
-	BitOn(WR_PORT,WR_BIT);
-	
-	BitOn(CS_PORT,CS_BIT);
+	_NOP();
+
 }
 
 
@@ -91,18 +88,22 @@ void DisplayInit()
 	DDRG |= 1<<CS_BIT | 1<<RST_BIT | 1<<WR_BIT;
 	DDRD |= 1<<DC_BIT;
 	
-	_delay_ms(500);
+	PORTG |= 0b00000111;
+	PORTD |= 0b10000000;
 	//Reset 
-	BitOff(RST_PORT,RST_BIT);
-	//RST_PORT &= ~(1<<RST_BIT);
-	_delay_ms(50);
+	BitOff(RST_PORT,RST_BIT);	
+	_delay_ms(500);
 	//RST_PORT |= 1<<RST_BIT;
 	BitOn(RST_PORT,RST_BIT);
-	_delay_ms(200);
-	WriteCommand(0x11);
-	_delay_ms(10);
-	//InterfacePixelFormat(0x55);
-	//MemoryAccessControl(0x04);
+	_delay_ms(130);
+	
+	SleepOut();
+	
+	DisplayOn();
+	
+	MemoryAccessControl(0b00001000);
+	
+	InterfacePixelFormat(0b00000101);
 }
 
 void DisplayOff()
@@ -113,10 +114,6 @@ void DisplayOff()
 void DisplayOn()
 {
 	WriteCommand(0x29);
-}
-
-void DisplayBrightness(unsigned char brightness){
-	
 }
 
 void SleepOut()
@@ -146,13 +143,16 @@ void MemoryWrite()
 // Red 0-31, Green 0-63, Blue 0-31
 void WritePixel(unsigned char Red, unsigned char Green, unsigned char Blue)
 {
+	WriteData(((unsigned int)Red<<11) | ((unsigned int)Green<<5) | Blue);
 }
 
 // Set Column Address (0-239), Start > End
 void SetColumnAddress(unsigned int Start, unsigned int End)
 {
 	WriteCommand(0x2A);
+	WriteData(Start>>8);
 	WriteData(Start);
+	WriteData(End>>8);
 	WriteData(End);
 }
 
@@ -160,7 +160,9 @@ void SetColumnAddress(unsigned int Start, unsigned int End)
 void SetPageAddress(unsigned int Start, unsigned int End)
 {
 	WriteCommand(0x2B);
+	WriteData(Start>>8);
 	WriteData(Start);
+	WriteData(End>>8);		
 	WriteData(End);	
 }
 
@@ -170,4 +172,11 @@ void SetPageAddress(unsigned int Start, unsigned int End)
 // R-G-B = 5-6-5 bits.
 void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, unsigned int Height, unsigned char Red, unsigned char Green, unsigned char Blue)
 {
+	SetPageAddress(StartX,StartX+Width);
+	SetColumnAddress(StartY,StartY+Height);
+	MemoryWrite();
+	for (unsigned long i=0; i<((unsigned long)(Width+1)*(Height+1)); i++)
+	{
+		WritePixel(Red,Green,Blue);
+	}
 }
