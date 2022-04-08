@@ -20,7 +20,12 @@ string HandleBookConcurrency( ApplicationDbContext context, EntityEntry entry)
         //TODO: Logic to decide which value should be written to database
         if(property.Name == nameof(Book.PublishedOn))
         {
-            entry.Property(property.Name).CurrentValue = whatIWantedItToBe;
+            if(otherUserValue != null && whatIWantedItToBe != null)
+            {
+                DateTime before = (DateTime)otherUserValue;
+                DateTime after = (DateTime)whatIWantedItToBe;
+                entry.Property(property.Name).CurrentValue = DateTime.UtcNow.AddDays(-2200);
+            }
         }
         entry.Property(property.Name).OriginalValue = otherUserData.Property(property.Name).CurrentValue;
     };
