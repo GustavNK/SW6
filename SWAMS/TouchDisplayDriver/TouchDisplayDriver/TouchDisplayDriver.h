@@ -11,7 +11,8 @@
 
 void initTouchDisplay();
 int* readInput();
-
+void writeByte(unsigned char input);
+unsigned char readByte();
 
 
 #endif /* TOUCHDISPLAYDRIVER_H_ */
