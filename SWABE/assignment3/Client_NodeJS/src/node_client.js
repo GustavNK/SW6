@@ -8,7 +8,7 @@ amqp.connect('amqp://localhost', function (error0, connection) {
         if (error1) {
             throw error1;
         }
-        var queue = 'Reservation';
+        var queue = 'Reservations';
 
         var reservationJSON =
         {   "hotelId": 1,
