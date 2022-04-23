@@ -88,8 +88,16 @@ function startWorker() {
         function processMsg(msg) {
             work(msg, function (ok) {
                 try {
-                    if (ok)
+                    if (ok) {
+                        console.log(msg);
+                        // Write to disk
+                        var txtFile = new File('test.txt');
+                        txtFile.writeln(msg);
+                        txtFile.close();
+                        // Send to confirmation
+                        channel.sendToQueue("Confirms", Buffer.from(msg));
                         ch.ack(msg);
+                    }
                     else
                         ch.reject(msg, true);
                 } catch (e) {

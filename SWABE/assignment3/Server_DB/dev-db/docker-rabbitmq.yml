@@ -11,14 +11,14 @@ services:
 			- 5672
 		environment:
 			- RABBITMQ_DEFAULT_USER=admin
-			- RABBITMQ_DEFAULT_PASS=password
-	postgres:
-		container_name: abe_pg
-		image: postgres:latest
-		expose:
-			- 5433
-		ports:
-			- '5433:5432'
-		environment:
-			- POSTGRES_USER=admin
-			- POSTGRES_PASSWORD=password
+			- RABBITMQ_DEFAULT_PASS=password 
+	# postgres:
+	# container_name: abe_pg
+	# image: postgres:latest
+	# expose:
+	# - 5433
+	# ports:
+	# - '5433:5432'
+	# environment:
+	# - POSTGRES_USER=admin
+	# - POSTGRES_PASSWORD=password
