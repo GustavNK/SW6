@@ -26,7 +26,7 @@ namespace Client_sharp
       {
         using (var channel = connection.CreateModel())
         {
-          channel.QueueDeclare(queue: "hello",
+          channel.QueueDeclare(queue: "Reservations",
             durable: false,
             exclusive: false,
             autoDelete: false,
