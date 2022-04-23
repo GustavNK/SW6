@@ -1,0 +1,15 @@
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "RabbitMQ hello world",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Assignment 3 - ABE",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.7.1"
+  }
+}
