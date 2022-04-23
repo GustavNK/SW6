@@ -2,11 +2,10 @@
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Client_sharp
 {
-  internal class Program
+    internal class Program
   {
     public class Booking
     {
@@ -21,7 +20,7 @@ namespace Client_sharp
 
     public static void Main(string[] args)
     {
-      var factory = new ConnectionFactory() { HostName = "localhost" };
+      var factory = new ConnectionFactory() { HostName = "localhost", UserName = "admin", Password = "password"};
       using (var connection = factory.CreateConnection())
       {
         using (var channel = connection.CreateModel())
@@ -53,9 +52,9 @@ namespace Client_sharp
           Console.WriteLine(message);
           
           var body = Encoding.UTF8.GetBytes(message);
-
+          
           channel.BasicPublish(exchange: "",
-            routingKey: "hello",
+            routingKey: "Reservations",
             basicProperties: null,
             body: body);
           Console.WriteLine(" [x] Sent {0}", message);
