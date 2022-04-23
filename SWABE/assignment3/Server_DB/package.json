@@ -4,13 +4,14 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app",
-    "start-db": "docker-compose -f dev-db/docker-rabbitmq.yml up"
+    "start": "node server.js",
+    "start-queue": "docker-compose -f dev-db/docker-rabbitmq.yml up"
   },
   "author": "DankMoller",
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.7.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "pg": "^8.5.1"
   }
 }
