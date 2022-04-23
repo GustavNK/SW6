@@ -9,7 +9,6 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             throw error1;
         }
         var queue = 'Reservation';
-        var msg = 'Hello world';
 
         var reservationJSON =
         {   "hotelId": 1,
@@ -21,14 +20,14 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             "CustomerAddress": "Bobsenvej"
         };
 
-
+        var jsonString = JSON.stringify(reservationJSON);
 
         channel.assertQueue(queue, {
             durable: false
         });
 
-        channel.sendToQueue(queue, Buffer.from(reservationJSON));
-        console.log(" [x] Sent %s", msg);
+        channel.sendToQueue(queue, Buffer.from(jsonString));
+        console.log(" [x] Sent %s", jsonString);
     });
     setTimeout(function() {
         connection.close();
