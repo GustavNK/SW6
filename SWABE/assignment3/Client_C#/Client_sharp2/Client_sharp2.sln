@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client_sharp2", "Client_sharp2\Client_sharp2.csproj", "{21603668-16DE-4FC4-B738-BC511E3C19BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{21603668-16DE-4FC4-B738-BC511E3C19BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21603668-16DE-4FC4-B738-BC511E3C19BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21603668-16DE-4FC4-B738-BC511E3C19BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21603668-16DE-4FC4-B738-BC511E3C19BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

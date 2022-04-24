@@ -1,1 +1,2 @@
 {"hotelId":3,"checkIn":"2022-04-23T12:49:01.6135664+02:00","checkOut":"2022-04-24T12:49:01.6146324+02:00","roomNo":34,"customerName":"Hello World","customerEmail":"hello@world.com","customerAddress":"Hellostreet 2","confirmationId":"2f628d3a-1a9f-4bcc-8db0-479dc4e00ccb"}
+{"hotelId":3,"checkIn":"2022-04-24T10:50:44.1466652+02:00","checkOut":"2022-04-25T10:50:44.1503672+02:00","roomNo":41,"customerName":"Hello World","customerEmail":"hello@world.com","customerAddress":"Hellostreet 2","confirmationId":"14155328-0676-4a6c-940e-d980e7224386"}
