@@ -1,1 +1,2 @@
 {"hotelId":3,"checkIn":"2022-04-23T12:49:01.6135664+02:00","checkOut":"2022-04-24T12:49:01.6146324+02:00","roomNo":34,"customerName":"Hello World","customerEmail":"hello@world.com","customerAddress":"Hellostreet 2","confirmationId":"2f628d3a-1a9f-4bcc-8db0-479dc4e00ccb"}
+{"hotelId":1,"checkIn":"2022-04-24T08:45:03.620Z","checkOut":1650876303620,"roomNo":1,"customerName":"Bob Bobsen","customerEmail":"Bobsen@gmail.com","CustomerAddress":"Bobsenvej","confirmationId":"b6aece6f-2e49-4459-ba01-b91b195b9b2c"}
