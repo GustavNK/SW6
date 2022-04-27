@@ -46,10 +46,8 @@ void writeByte(unsigned char input){
 		// Set bit to input at correct index
 		if((input & (1<<i))){
 			BITON(DIN_PORT, DIN_BIT);
-			sendChar('1');
 		}else{
 			BITOFF(DIN_PORT, DIN_BIT);
-			sendChar('0');
 		}
 		// MIN 100ns wait before correct read
 		_NOP();

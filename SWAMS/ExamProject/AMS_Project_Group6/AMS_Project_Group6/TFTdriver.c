@@ -166,13 +166,15 @@ void SetPageAddress(unsigned int Start, unsigned int End)
 	WriteData(End);	
 }
 
-void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Blue, unsigned char Green)
+void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue)
 {
-	SetPageAddress(x,x+1);
-	SetColumnAddress(y,y);
+	SetPageAddress(y,y+1);
+	SetColumnAddress(x,x+1);
 	MemoryWrite();
+	
 	WritePixel(Red,Green,Blue);
 }
+
 // Fills rectangle with specified color
 // (StartX,StartY) = Upper left corner. X horizontal (0-319) , Y vertical (0-239).
 // Height (1-240) is vertical. Width (1-320) is horizontal.
