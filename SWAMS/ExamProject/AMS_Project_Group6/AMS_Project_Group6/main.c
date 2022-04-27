@@ -12,6 +12,8 @@
 #include "UART.h"
 #include <util/delay.h>
 #include "TFTdriver.h"
+#define X_PLATE_RES 255
+#define Y_PLATE_RES 255
 
 unsigned int formatX(unsigned int x);
 
@@ -33,7 +35,7 @@ int main(void)
 	//FillRectangle(140,140,320-140,100,31,0,0);  
     while (1)
     {
-	    //_delay_ms(100);
+	    _delay_ms(10);
 	    //Writebyte x position (startbit 1, x position, mode 8bit, SER/DFR = low, PD1,PD0 = all on)
 	    writeByte(0b11011011);
 	    //Read x position
@@ -43,10 +45,15 @@ int main(void)
 	    //read y position
 	    unsigned char resultY = readByte();
 	    
+		//z1 = 011
+		writeByte(0b10111011);
+		unsigned char resultZ1 = readByte();
+		
+		
 	    //Lav unsigned char om til int
 	    unsigned int x = (int)resultX;
 	    unsigned int y = (int)resultY;
-	    
+	    unsigned int z1 = (int)resultZ1;
 	    //Lav int til string
 	    char x_string[100];
 	    sprintf(x_string, "X axis: %d \n", x);
@@ -57,7 +64,15 @@ int main(void)
 	    sendString(x_string);
 	    sendString(y_string);
 		
-		FillPixel(formatX(x),formatY(y),0,63,0);
+		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
+		char z_string[100];
+		sprintf(z_string, "Z Res: %u \n", Rtouch);
+		sendString(z_string);
+		
+		if(Rtouch < 5000)
+		{	
+			FillPixel(formatX(x),formatY(y),0,63,0);
+		}
     }
 }
 
