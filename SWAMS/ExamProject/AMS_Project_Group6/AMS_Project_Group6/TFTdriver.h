@@ -29,8 +29,8 @@ void InterfacePixelFormat(unsigned char parameter);
 void WritePixel(unsigned char Red, unsigned char Blue, unsigned char Green);
 void SetColumnAddress(unsigned int Start, unsigned int End);
 void SetPageAddress(unsigned int Start, unsigned int End);
-void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Blue, unsigned char Green);
 void MemoryWrite();
+void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue);
 void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, 
                    unsigned int Height, unsigned char Red, unsigned char Green, unsigned char Blue);
 

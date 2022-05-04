@@ -21,7 +21,7 @@ int main(void)
 	
     while (1) 
     {
-		_delay_ms(500);
+		_delay_ms(100);
 		//Writebyte x position (startbit 1, x position, mode 8bit, SER/DFR = low, PD1,PD0 = all on)
 		sendString("\nSend X:");
 		writeByte(0b11011011);
@@ -35,8 +35,8 @@ int main(void)
 		//read y position
 		unsigned char resultY = readByte();
 		
-		if(resultX && resultY)
-		{
+		//if(resultX && resultY)
+		//{
 			//Lav unsigned char om til int 
 			int x = (int)resultX;
 			int y = (int)resultY;
@@ -50,10 +50,10 @@ int main(void)
 			//Send string til uart
 			sendString(x_string);
 			sendString(y_string);
-		}
-		else{
-			PORTB = 0;
-		}
+		//}
+		//else{
+		//	PORTB = 0;
+		//}
 		
 		
     }
