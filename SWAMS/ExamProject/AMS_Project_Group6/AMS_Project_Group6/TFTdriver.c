@@ -179,7 +179,8 @@ void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char 
 // (StartX,StartY) = Upper left corner. X horizontal (0-319) , Y vertical (0-239).
 // Height (1-240) is vertical. Width (1-320) is horizontal.
 // R-G-B = 5-6-5 bits.
-void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, unsigned int Height, unsigned char Red, unsigned char Green, unsigned char Blue)
+void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, unsigned int Height, 
+unsigned char Red, unsigned char Green, unsigned char Blue)
 {
 	SetPageAddress(StartX,StartX+Width);
 	SetColumnAddress(StartY,StartY+Height);
