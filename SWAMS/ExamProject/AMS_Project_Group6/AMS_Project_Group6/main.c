@@ -6,9 +6,11 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <math.h>
 #define F_CPU 16000000
 #include "TouchDisplayDriver.h"
+#include "InteruptTimer.h"
 #include <stdio.h>
 #include "UART.h"
 #include <util/delay.h>
@@ -21,18 +23,39 @@ unsigned int formatY(unsigned int y);
 
 int main(void)
 {
+	// Global interrupt enable
+	sei();
+	initTimer0();
+	
 	DisplayInit();
 	initTouchDisplay();
 	initUART();
 	DDRB = 0xFF;
 	PORTB = 0;
+	
+	unsigned char green[3] = {0,61,0};
+	unsigned char red[3] = {31,0,0};
+	unsigned char blue[3] = {0,0,31};
+	unsigned char yellow[3] = {31,61,0};
+	unsigned char currentColor = 1;
+
+	unsigned char* colors[4] = {
+	&green,
+	&red,
+	&blue,
+	&yellow
+	};
 	// Fills rectangle with specified color
 	// (StartX,StartY) = Upper left corner. X horizontal (0-319) , Y vertical (0-239).
 	// Height (1-240) is vertical. Width (1-320) is horizontal.
 	// R-G-B = 5-6-5 bits.	
 	FillRectangle(0,0,320,240,31,61,31);
-	FillRectangle(300,220,20,20,0,0,31);  
 	
+	//Fill blue for reset button
+	FillRectangle(300,180,20,60,0,0,31);  
+	
+	//Fill green for inital color picker
+	FillRectangle(300,0,20,60,0,61,0);
     while (1)
     {
 	    //_delay_ms(10);
@@ -52,11 +75,11 @@ int main(void)
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
 	    //Lav int til string
-	    //char x_string[100];
-	    //sprintf(x_string, "X axis: %d \n", x);
-
-	    //char y_string[100];
-	    //sprintf(y_string, "Y axis: %d \n", y);
+// 	    char x_string[100];
+// 	    sprintf(x_string, "X axis: %d \n", x);
+// 
+// 	    char y_string[100];
+// 	    sprintf(y_string, "Y axis: %d \n", y);
 	    //Send string til uart
 	    //sendString(x_string);
 	    //sendString(y_string);
@@ -72,13 +95,24 @@ int main(void)
 		
 		if(Rtouch < 1500)
 		{
-			if(20 < x && x < 30 && 20 < y && y < 30 )
+			if(20 < x && x < 60 && 20 < y && y < 30 )
 			{
 			   FillRectangle(0,0,300,240,31,61,31);
 			}
-			else {
+			else if(180 < x && x < 255 && 10 < y && y < 40 && busy())
+			{
+				setBusy();
+				currentColor >= (sizeof colors / sizeof colors[0])-1 ? currentColor = 0 : currentColor++;
+				FillRectangle(300,0,20,60,
+				colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);
+			}
+			else if(y>20 && busy())
+			{
 				size = 1 + (int)pow(((1500-Rtouch)*0.005),2);
-				FillRectangle(formatY(y+(int)(size/2)),formatX(x+(int)(size/2)),size,size,0,63,0);
+				
+				FillRectangle(formatY(y+(int)(size/2)),
+				formatX(x+(int)(size/2)),size,size,
+				colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);
 			}
 			
 		}
@@ -96,6 +130,8 @@ unsigned int formatX(unsigned int x)
 	return 240 - x;
 }
 
+
+
 unsigned int formatY(unsigned int y)
 {
 	//touch max 245
@@ -104,5 +140,7 @@ unsigned int formatY(unsigned int y)
 	return 320 - (unsigned int)temp;
 	
 }
+
+
 
 
