@@ -63,7 +63,7 @@ void writeByte(unsigned char input){
 		_NOP(); // May be removed to increase performance 
 				// if for loop increment and beginning if statement is longer than 100 ns
 	}
-	sendChar('\n');
+	//sendChar('\n');
 	// After write busy flag is ready after max 200ns so we wait a bit before possible read
 	_NOP();
 	_NOP();
@@ -72,7 +72,7 @@ void writeByte(unsigned char input){
 }
 
 unsigned char readByte(){
-	sendString("ReadByte: ");
+	//sendString("ReadByte: ");
 	unsigned char output = 0;
 	
 	for (int i = 8; i >= 0; i--)
@@ -80,7 +80,7 @@ unsigned char readByte(){
 		// read bit into byte
 		unsigned char resultInput = (DOUT_PORT & (1 << DOUT_BIT)) >> 5;
 		if(i!=8){
-			sendChar( 48 + resultInput);
+			//sendChar( 48 + resultInput);
 		}
 		output = output<<1 | resultInput;
 		// Hit clock (Aka Yep Cock)
@@ -100,7 +100,7 @@ unsigned char readByte(){
 		_NOP();
 		_NOP(); // ~250ns
 	}
-	sendChar('\n');
+	//sendChar('\n');
 	//Sæt CS TIL ON
 	BITON(PORTE,3);
 	return output;
