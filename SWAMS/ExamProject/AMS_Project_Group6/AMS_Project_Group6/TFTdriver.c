@@ -43,6 +43,7 @@
 
 #define BitOn(port, bit) port |= 1<<bit;
 #define BitOff(port,bit) port &= ~(1<<bit);
+int noWriteX;
 
 // LOCAL FUNCTIONS /////////////////////////////////////////////////////////////
 
@@ -81,8 +82,9 @@ void WriteData(unsigned int data)
 // PUBLIC FUNCTIONS ////////////////////////////////////////////////////////////
 
 // Initializes (resets) the display
-void DisplayInit()
+void DisplayInit(int menuX)
 {
+	noWriteX = menuX;
 	DDRA |= 0xFF;
 	DDRC |= 0xFF;
 	DDRG |= 1<<CS_BIT | 1<<RST_BIT | 1<<WR_BIT;
@@ -159,11 +161,15 @@ void SetColumnAddress(unsigned int Start, unsigned int End)
 // Set Page Address (0-319), Start > End
 void SetPageAddress(unsigned int Start, unsigned int End)
 {
-	WriteCommand(0x2B);
-	WriteData(Start>>8);
-	WriteData(Start);
-	WriteData(End>>8);		
-	WriteData(End);	
+	if(Start <= 319 - noWriteX)
+	{
+		WriteCommand(0x2B);
+		WriteData(Start>>8);
+		WriteData(Start);
+		WriteData(End>>8);
+		WriteData(End);
+	}
+		
 }
 
 void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue)
@@ -188,5 +194,72 @@ unsigned char Red, unsigned char Green, unsigned char Blue)
 	for (unsigned long i=0; i<((unsigned long)(Width+1)*(Height+1)); i++)
 	{
 		WritePixel(Red,Green,Blue);
+	}
+}
+
+
+void drawCircle(int xc, int yc, int x, int y, unsigned char Red, unsigned char Green, unsigned char Blue)
+{
+	for (int i = -x; i < x; i++)
+	{
+		for (int j = -y; j < y; j++)
+		{
+			FillPixel(xc+i, yc+j, Red, Green, Blue);
+		}
+	}
+}
+
+// Function for circle-generation
+// using Bresenham's algorithm
+void circleBres(int xc, int yc, int r, unsigned char Red, unsigned char Green, unsigned char Blue)
+{
+	int x = 0, y = r;
+	int d = 3 - 2 * r;
+	drawCircle(xc, yc, x, y, Red, Green, Blue);
+	while (y >= x)
+	{
+		// for each pixel we will
+		// draw all eight pixels
+		x++;
+		
+		// check for decision parameter
+		// and correspondingly
+		// update d, x, y
+		if (d > 0)
+		{
+			y--;
+			d = d + 4 * (x - y) + 10;
+		}
+		else
+		d = d + 4 * x + 6;
+		drawCircle(xc, yc, x, y, Red, Green, Blue);
+	}
+}
+
+
+void DrawCircle(unsigned int StartX, unsigned int StartY, unsigned int radius,
+unsigned char Red, unsigned char Green, unsigned char Blue)
+{
+	//int radius = radius + (1 - radius%2);
+	//int diameter = radius * 2 + 1;
+	//
+	//SetPageAddress(StartX,StartX + radius);
+	//SetColumnAddress(StartY,StartY + radius);
+	//MemoryWrite();
+	//
+	//for (unsigned long i=0; i<((unsigned long)(diameter+1)*(diameter+1)); i++)
+	//{
+	//	if 
+	//	WritePixel(Red,Green,Blue);
+	//}
+	for(int y=-radius; y<=radius; y++)
+	{
+		for(int x=-radius; x<=radius; x++)
+		{
+			if(x*x+y*y <= radius*radius)
+			{
+				FillPixel(StartX+x, StartY+y, 0, 0,31);
+			}
+		}
 	}
 }

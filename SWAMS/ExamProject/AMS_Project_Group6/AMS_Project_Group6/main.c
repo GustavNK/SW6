@@ -21,7 +21,7 @@ unsigned int formatY(unsigned int y);
 
 int main(void)
 {
-	DisplayInit();
+	DisplayInit(40);
 	initTouchDisplay();
 	initUART();
 	DDRB = 0xFF;
@@ -34,8 +34,7 @@ int main(void)
 	FillRectangle(300,220,20,20,0,0,31);  
 	
     while (1)
-    {
-	    //_delay_ms(10);
+	{
 	    //Writebyte x position (startbit 1, x position, mode 8bit, SER/DFR = low, PD1,PD0 = all on)
 	    writeByte(0b11011011);
 	    //Read x position
@@ -51,15 +50,6 @@ int main(void)
 	    unsigned int x = (int)resultX;
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
-	    //Lav int til string
-	    //char x_string[100];
-	    //sprintf(x_string, "X axis: %d \n", x);
-
-	    //char y_string[100];
-	    //sprintf(y_string, "Y axis: %d \n", y);
-	    //Send string til uart
-	    //sendString(x_string);
-	    //sendString(y_string);
 		
 		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
 		//char z_string[100];
@@ -77,12 +67,11 @@ int main(void)
 			   FillRectangle(0,0,300,240,31,61,31);
 			}
 			else {
-				size = 1 + (int)pow(((1500-Rtouch)*0.005),2);
-				FillRectangle(formatY(y+(int)(size/2)),formatX(x+(int)(size/2)),size,size,0,63,0);
-			}
-			
+				size = 1 + (int)pow(((1500-Rtouch)*0.002),2);
+				//circleBres(formatX(x), formatY(y), size, 0, 0, 31);    // function call
+				DrawCircle(formatX(x),  formatY(y), size, 0, 0, 31);
+			}	
 		}
-		
     }
 }
 
@@ -100,7 +89,7 @@ unsigned int formatY(unsigned int y)
 {
 	//touch max 245
 	//Graphic max 320
-	float temp =((float)y * (320.0/240.0));
+	float temp =((float)y * (320.0/240.0) - 15);
 	return 320 - (unsigned int)temp;
 	
 }
