@@ -18,6 +18,26 @@
 #define X_PLATE_RES 255
 #define Y_PLATE_RES 255
 
+#define REDCOLORSCALE 32/255
+#define GREENCOLORSCALE 62/255
+#define BLUECOLORSCALE 32/255
+
+struct Color 
+{
+	unsigned char Red;
+	unsigned char Green;
+	unsigned char Blue;
+	
+	Color(unsigned char r, unsigned char g, unsigned char b){	
+		Red = r * REDCOLORSCALE;
+		Green = g * GREENCOLORSCALE;
+		Blue = b * BLUECOLORSCALE;
+		sendChar(Red);
+		sendChar(Green);
+		sendChar(Blue);		
+	}
+};
+
 unsigned int formatX(unsigned int x);
 unsigned int formatY(unsigned int y);
 void debugUART();
@@ -34,13 +54,13 @@ int main(void)
 	DDRB = 0xFF;
 	PORTB = 0;
 	
-	unsigned char green[3] = {0,61,0};
-	unsigned char red[3] = {31,0,0};
-	unsigned char blue[3] = {0,0,31};
-	unsigned char yellow[3] = {31,61,0};
+	Color green = Color(0,255,0);
+	Color red = Color(255,0,0);
+	Color blue = Color(0,0,255);
+	Color yellow = Color(255,255,0);
 	unsigned char currentColor = 1;
 
-	unsigned char* colors[4] = {
+	Color* colors[4] = {
 	&green,
 	&red,
 	&blue,
@@ -99,13 +119,13 @@ int main(void)
 				setBusy();
 				currentColor >= (sizeof colors / sizeof colors[0])-1 ? currentColor = 0 : currentColor++;
 				FillRectangle(300,0,20,60,
-				colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);
+				colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
 			}
 			// D
 			else if(y>20 && busy())
 			{
 				size = 1 + (int)pow(((1500-Rtouch)*0.002),2);
-				circleBres(formatX(x), formatY(y), size, colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);    // function call
+				circleBres(formatX(x), formatY(y), size, colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);    // function call
 				//DrawCircle(formatX(x),  formatY(y), size, colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);
 			}
 
