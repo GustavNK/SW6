@@ -19,9 +19,9 @@
 #define Y_PLATE_RES 255
 #define MENU_X_HEIGHT 20
 
-#define REDCOLORSCALE 32/255
-#define GREENCOLORSCALE 62/255
-#define BLUECOLORSCALE 32/255
+#define REDCOLORSCALE 31/255
+#define GREENCOLORSCALE 61/255
+#define BLUECOLORSCALE 31/255
 
 struct Color
 {
@@ -32,9 +32,11 @@ struct Color
 
 struct Color Color_new(unsigned char r, unsigned char g, unsigned char b){
 	struct Color c = {.Red = r * REDCOLORSCALE, .Green= g * GREENCOLORSCALE, .Blue = b * BLUECOLORSCALE};
-	sendChar(c.Red);
-	sendChar(c.Green);
-	sendChar(c.Blue);
+	char* output = (char*)malloc(25 * sizeof(char));
+#ifdef DEBUG
+	sprintf(output, "R: %d - G: %d - B: %d\n", c.Red, c.Green, c.Blue);
+	sendString(output);
+#endif
 	return c;
 }
 
@@ -97,12 +99,11 @@ int main(void)
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
 		
+#ifdef DEBUG
 		debugUART(x, y);
+#endif
 
 		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
-		//char z_string[100];
-		//sprintf(z_string, "Z Res: %u \n", Rtouch);
-		//sendString(z_string);
 		
 		unsigned int size;
 		//Hårdt ca 150
