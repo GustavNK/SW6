@@ -7,17 +7,38 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 #include <math.h>
 #define F_CPU 16000000
 #include "TouchDisplayDriver.h"
 #include "InteruptTimer.h"
 #include <stdio.h>
 #include "UART.h"
-#include <util/delay.h>
 #include "TFTdriver.h"
 #define X_PLATE_RES 255
 #define Y_PLATE_RES 255
 #define MENU_X_HEIGHT 40
+
+#define REDCOLORSCALE 31/255
+#define GREENCOLORSCALE 61/255
+#define BLUECOLORSCALE 31/255
+
+struct Color
+{
+	unsigned char Red;
+	unsigned char Green;
+	unsigned char Blue;
+};
+
+struct Color Color_new(unsigned char r, unsigned char g, unsigned char b){
+	struct Color c = {.Red = r * REDCOLORSCALE, .Green= g * GREENCOLORSCALE, .Blue = b * BLUECOLORSCALE};
+	char* output = (char*)malloc(25 * sizeof(char));
+#ifdef DEBUG
+	sprintf(output, "R: %d - G: %d - B: %d\n", c.Red, c.Green, c.Blue);
+	sendString(output);
+#endif
+	return c;
+}
 
 unsigned int formatX(unsigned int x);
 unsigned int formatY(unsigned int y);
@@ -35,13 +56,13 @@ int main(void)
 	DDRB = 0xFF;
 	PORTB = 0;
 	
-	unsigned char green[3] = {0,61,0};
-	unsigned char red[3] = {31,0,0};
-	unsigned char blue[3] = {0,0,31};
-	unsigned char yellow[3] = {31,61,0};
+	struct Color green	=	Color_new(0,255,0);
+	struct Color red	=	Color_new(255,0,0);
+	struct Color blue	=	Color_new(0,0,255);
+	struct Color yellow	=	Color_new(255,255,0);
 	unsigned char currentColor = 1;
 
-	unsigned char* colors[4] = {
+	struct Color* colors[4] = {
 	&green,
 	&red,
 	&blue,
@@ -78,12 +99,12 @@ int main(void)
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
 		
-		//debugUART(x, y);
+#ifdef DEBUG
+		debugUART(x, y);
+#endif
+
 
 		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
-		//char z_string[100];
-		//sprintf(z_string, "Z Res: %u \n", Rtouch);
-		//sendString(z_string);
 		
 		unsigned int size;
 		//Hårdt ca 150
@@ -101,14 +122,16 @@ int main(void)
 			{
 				setBusy();
 				currentColor >= (sizeof colors / sizeof colors[0])-1 ? currentColor = 0 : currentColor++;
-				FillRectangle(320-MENU_X_HEIGHT,0,MENU_X_HEIGHT,60,
-				colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);
+
+				FillRectangle(300,0,20,60,
+				colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
+
 			}
 			// D
 			else if(y>MENU_X_HEIGHT && busy())
 			{
 				size = 1 + (int)pow(((1500-Rtouch)*0.002),2);
-				circleBres(formatX(x), formatY(y), size, colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);    // function call
+				circleBres(formatX(x), formatY(y), size, colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);    // function call
 				//DrawCircle(formatX(x),  formatY(y), size, colors[currentColor][0],colors[currentColor][1],colors[currentColor][2]);
 			}
 
