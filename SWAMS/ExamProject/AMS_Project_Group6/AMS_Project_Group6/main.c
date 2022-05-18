@@ -7,13 +7,13 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 #include <math.h>
 #define F_CPU 16000000
 #include "TouchDisplayDriver.h"
 #include "InteruptTimer.h"
 #include <stdio.h>
 #include "UART.h"
-#include <util/delay.h>
 #include "TFTdriver.h"
 #define X_PLATE_RES 255
 #define Y_PLATE_RES 255
@@ -23,21 +23,20 @@
 #define GREENCOLORSCALE 62/255
 #define BLUECOLORSCALE 32/255
 
-struct Color 
+struct Color
 {
 	unsigned char Red;
 	unsigned char Green;
 	unsigned char Blue;
-	
-	Color(unsigned char r, unsigned char g, unsigned char b){	
-		Red = r * REDCOLORSCALE;
-		Green = g * GREENCOLORSCALE;
-		Blue = b * BLUECOLORSCALE;
-		sendChar(Red);
-		sendChar(Green);
-		sendChar(Blue);		
-	}
 };
+
+struct Color Color_new(unsigned char r, unsigned char g, unsigned char b){
+	struct Color c = {.Red = r * REDCOLORSCALE, .Green= g * GREENCOLORSCALE, .Blue = b * BLUECOLORSCALE};
+	sendChar(c.Red);
+	sendChar(c.Green);
+	sendChar(c.Blue);
+	return c;
+}
 
 unsigned int formatX(unsigned int x);
 unsigned int formatY(unsigned int y);
@@ -55,13 +54,13 @@ int main(void)
 	DDRB = 0xFF;
 	PORTB = 0;
 	
-	Color green = Color(0,255,0);
-	Color red = Color(255,0,0);
-	Color blue = Color(0,0,255);
-	Color yellow = Color(255,255,0);
+	struct Color green	=	Color_new(0,255,0);
+	struct Color red	=	Color_new(255,0,0);
+	struct Color blue	=	Color_new(0,0,255);
+	struct Color yellow	=	Color_new(255,255,0);
 	unsigned char currentColor = 1;
 
-	Color* colors[4] = {
+	struct Color* colors[4] = {
 	&green,
 	&red,
 	&blue,
