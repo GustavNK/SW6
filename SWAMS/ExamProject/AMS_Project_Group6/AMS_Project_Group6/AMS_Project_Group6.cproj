@@ -158,6 +158,12 @@
     <Compile Include="TouchDisplayDriver.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="trashArt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="trashArt.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="UART.c">
       <SubType>compile</SubType>
     </Compile>
