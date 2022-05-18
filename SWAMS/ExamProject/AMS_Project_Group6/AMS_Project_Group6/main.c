@@ -56,7 +56,7 @@ int main(void)
 	FillRectangle(0,0,320,240,31,61,31);
 	
 	//Fill blue for reset button
-	FillRectangle(300,180,20,60,0,0,31);  
+	FillRectangle(300,180,20,60,0,0,0);  
 	
 	//Fill green for inital color picker
 	FillRectangle(300,0,20,60,0,61,0);
