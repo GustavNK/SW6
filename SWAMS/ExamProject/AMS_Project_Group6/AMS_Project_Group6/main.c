@@ -17,6 +17,7 @@
 #include "TFTdriver.h"
 #define X_PLATE_RES 255
 #define Y_PLATE_RES 255
+#define MENU_X_HEIGHT 20
 
 unsigned int formatX(unsigned int x);
 unsigned int formatY(unsigned int y);
@@ -28,7 +29,7 @@ int main(void)
 	sei();
 	initTimer0();
 	
-	DisplayInit(40);
+	DisplayInit(MENU_X_HEIGHT);
 	initTouchDisplay();
 	initUART();
 	DDRB = 0xFF;
@@ -50,6 +51,8 @@ int main(void)
 	// (StartX,StartY) = Upper left corner. X horizontal (0-319) , Y vertical (0-239).
 	// Height (1-240) is vertical. Width (1-320) is horizontal.
 	// R-G-B = 5-6-5 bits.	
+	
+	// Draw white background 
 	FillRectangle(0,0,320,240,31,61,31);
 	
 	//Fill blue for reset button
@@ -75,7 +78,7 @@ int main(void)
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
 		
-		//void debugUART(x, y)
+		debugUART(x, y);
 
 		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
 		//char z_string[100];

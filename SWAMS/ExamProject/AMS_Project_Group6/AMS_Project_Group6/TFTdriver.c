@@ -169,7 +169,6 @@ void SetPageAddress(unsigned int Start, unsigned int End)
 		WriteData(End>>8);
 		WriteData(End);
 	}
-		
 }
 
 void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue)
@@ -188,7 +187,13 @@ void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char 
 void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, unsigned int Height, 
 unsigned char Red, unsigned char Green, unsigned char Blue)
 {
-	SetPageAddress(StartX,StartX+Width);
+	// Set page address
+	WriteCommand(0x2B);
+	WriteData(StartX>>8);
+	WriteData(StartX);
+	WriteData((StartX + Width)>>8);
+	WriteData((StartX + Width));
+	//SetPageAddress(StartX,StartX+Width);
 	SetColumnAddress(StartY,StartY+Height);
 	MemoryWrite();
 	for (unsigned long i=0; i<((unsigned long)(Width+1)*(Height+1)); i++)
@@ -196,6 +201,7 @@ unsigned char Red, unsigned char Green, unsigned char Blue)
 		WritePixel(Red,Green,Blue);
 	}
 }
+
 
 
 void drawCircle(int xc, int yc, int x, int y, unsigned char Red, unsigned char Green, unsigned char Blue)
