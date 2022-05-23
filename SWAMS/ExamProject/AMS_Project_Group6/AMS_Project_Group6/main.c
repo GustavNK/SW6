@@ -97,7 +97,7 @@ int main(void)
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
 		
-		debugUART(x, y);
+		//debugUART(x, y);
 
 		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
 		//char z_string[100];
