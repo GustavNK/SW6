@@ -17,11 +17,11 @@
 #include "TFTdriver.h"
 #define X_PLATE_RES 255
 #define Y_PLATE_RES 255
-#define MENU_X_HEIGHT 20
+#define MENU_X_HEIGHT 40
 
-#define REDCOLORSCALE 32/255
-#define GREENCOLORSCALE 62/255
-#define BLUECOLORSCALE 32/255
+#define REDCOLORSCALE 31/255
+#define GREENCOLORSCALE 61/255
+#define BLUECOLORSCALE 31/255
 
 struct Color
 {
@@ -32,9 +32,11 @@ struct Color
 
 struct Color Color_new(unsigned char r, unsigned char g, unsigned char b){
 	struct Color c = {.Red = r * REDCOLORSCALE, .Green= g * GREENCOLORSCALE, .Blue = b * BLUECOLORSCALE};
-	sendChar(c.Red);
-	sendChar(c.Green);
-	sendChar(c.Blue);
+	char* output = (char*)malloc(25 * sizeof(char));
+#ifdef DEBUG
+	sprintf(output, "R: %d - G: %d - B: %d\n", c.Red, c.Green, c.Blue);
+	sendString(output);
+#endif
 	return c;
 }
 
@@ -74,11 +76,11 @@ int main(void)
 	// Draw white background 
 	FillRectangle(0,0,320,240,31,61,31);
 	
-	//Fill blue for reset button
-	FillRectangle(300,180,20,60,0,0,0);  
-	
+
+	drawIcon(320-MENU_X_HEIGHT,200);
+
 	//Fill green for inital color picker
-	FillRectangle(300,0,20,60,0,61,0);
+	FillRectangle(320-MENU_X_HEIGHT,0,MENU_X_HEIGHT,60,0,61,0);
     while (1)
 	{
 	    //Writebyte x position (startbit 1, x position, mode 8bit, SER/DFR = low, PD1,PD0 = all on)
@@ -97,34 +99,36 @@ int main(void)
 	    unsigned int y = (int)resultY;
 	    unsigned int z1 = (int)resultZ1;
 		
-		//debugUART(x, y);
+#ifdef DEBUG
+		debugUART(x, y);
+#endif
+
 
 		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
-		//char z_string[100];
-		//sprintf(z_string, "Z Res: %u \n", Rtouch);
-		//sendString(z_string);
 		
 		unsigned int size;
-		//Hårdt ca 150
-		//Blødt ca 800-900
+		//Hï¿½rdt ca 150
+		//Blï¿½dt ca 800-900
 		
 		if(Rtouch < 1500)
 		{
 			// Rest button
 			if(20 < x && x < 60 && 20 < y && y < 30 )
 			{
-			   FillRectangle(0,0,300,240,31,61,31);
+			   FillRectangle(0,0,320-MENU_X_HEIGHT,240,31,61,31);
 			}
 			// Change color button
 			else if(180 < x && x < 255 && 10 < y && y < 40 && busy())
 			{
 				setBusy();
 				currentColor >= (sizeof colors / sizeof colors[0])-1 ? currentColor = 0 : currentColor++;
+
 				FillRectangle(300,0,20,60,
 				colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
+
 			}
 			// D
-			else if(y>20 && busy())
+			else if(y>MENU_X_HEIGHT && busy())
 			{
 				size = 1 + (int)pow(((1500-Rtouch)*0.002),2);
 				circleBres(formatX(x), formatY(y), size, colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);    // function call

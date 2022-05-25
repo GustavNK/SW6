@@ -23,6 +23,7 @@
 #define F_CPU 16000000
 #include <util/delay.h>
 #include "TFTdriver.h"
+#include "trashArt.h"
 
 // Data port definitions:
 #define DATA_PORT_HIGH PORTA
@@ -268,4 +269,35 @@ unsigned char Red, unsigned char Green, unsigned char Blue)
 			}
 		}
 	}
+}
+
+void drawIcon(unsigned int StartX, unsigned int StartY)
+{
+
+	// Set page address
+	WriteCommand(0x2B);
+	WriteData(StartX>>8);
+	WriteData(StartX);
+	WriteData((StartX + 39)>>8);
+	WriteData((StartX + 39));
+	//SetPageAddress(StartX,StartX+Width);
+	SetColumnAddress(StartY,StartY+39);
+	MemoryWrite();
+
+	for(int x=0; x<40; x++)
+	{
+		for(int y=0; y<40; y++)
+		{
+			if(trashCan[y][x] == 0)
+			{
+				WritePixel(31, 61,31);
+			}
+			else
+			{
+				WritePixel(0, 0, 0);
+			}
+			
+		}
+	}
+
 }
