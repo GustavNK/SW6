@@ -26,6 +26,9 @@
 #define IRQ_PORT PORTE
 #define IRQ_BIT 4
 
+#define X_PLATE_RES 255
+#define Y_PLATE_RES 255
+
 
 
 void initTouchDisplay(){
@@ -105,3 +108,65 @@ unsigned char readByte(){
 	BITON(PORTE,3);
 	return output;
 }
+
+unsigned char getX()
+{
+	writeByte(0b11011011);
+	//Read x position
+	return readByte();
+	
+}
+
+unsigned int getY()
+{
+	writeByte(0b10011011);
+	//Read x position
+	return readByte();
+	
+}
+
+unsigned int getZ()
+{
+	writeByte(0b10111011);
+	//Read x position
+	return readByte();
+}
+
+struct Position 
+{
+	unsigned int x;
+	unsigned int y;
+	unsigned int z;	
+};
+unsigned int formatX(unsigned int x)
+{
+	//touch max 245
+	// graphic max 240
+	if(x > 240){
+		x = 240;
+	}
+	return 240 - x;
+}
+
+unsigned int formatY(unsigned int y)
+{
+	//touch max 245
+	//Graphic max 320
+	float temp =((float)y * (320.0/240.0) - 15);
+	return 320 - (unsigned int)temp;
+	
+}
+struct Position getPosition()
+{
+	unsigned char _x = getX();
+	unsigned char _y = getY();
+	unsigned char _z = getZ();
+	unsigned int rTouch = (X_PLATE_RES*_x/256) *((256/_z)-1) - Y_PLATE_RES * (1-(_y/256));
+	
+	struct Position p ;
+	p.x= formatX((unsigned int)_x);
+	p.y=formatY((unsigned int)_y);
+	p.z = rTouch;
+	return p;
+}
+

@@ -34,7 +34,7 @@ void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char 
 void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, 
                    unsigned int Height, unsigned char Red, unsigned char Green, unsigned char Blue);
 
-void drawCircle(int xc, int yc, int x, int y, unsigned char Red, unsigned char Green, unsigned char Blue);
+void drawCircle(int x, int y, int radius, unsigned char Red, unsigned char Green, unsigned char Blue);
 void circleBres(int xc, int yc, int r, unsigned char Red, unsigned char Green, unsigned char Blue);
 void DrawCircle(unsigned int StartX, unsigned int StartY, unsigned int radius,
 unsigned char Red, unsigned char Green, unsigned char Blue);
