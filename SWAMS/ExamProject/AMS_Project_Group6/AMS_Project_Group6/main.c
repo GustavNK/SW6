@@ -46,7 +46,6 @@ struct Color Color_new(unsigned char r, unsigned char g, unsigned char b){
 
 unsigned int formatX(unsigned int x);
 unsigned int formatY(unsigned int y);
-void debugUART();
 
 int main(void)
 {
@@ -79,17 +78,17 @@ int main(void)
 	
 	// Draw white background 
 	FillRectangle(0,0,320,240,31,61,31);
-	
 
+	// Draw trach icon
 	drawIcon(320-MENU_X_HEIGHT,200);
-
+	
 	//Fill green for inital color picker
 	FillRectangle(320-MENU_X_HEIGHT,0,MENU_X_HEIGHT,60,colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
     while (1)
 	{
 		struct Position pos = getPosition();
 #ifdef DEBUG
-		debugUART(pos.x, pos.y);
+		debugUART(pos.x, pos.y, pos.z);
 #endif
 		unsigned int size;
 		//Hårdt ca 150
@@ -97,18 +96,16 @@ int main(void)
 		if(pos.z < 1500)
 		{
 			// Clear canvas button
-			
-			if(320-MENU_X_HEIGHT < pos.y && pos.y < 320 && 0 < pos.x && pos.x < 60 && busy())
+			if(320-MENU_X_HEIGHT < pos.y && pos.y < 320 && 200 < pos.x && pos.x < 255 && busy() )
 			{
 				setBusy();
-				FillRectangle(0,0,320-MENU_X_HEIGHT,240,31,61,31);
+				FillRectangle(0,0,320-MENU_X_HEIGHT,240,31,61,31);	
 			}
 			// Change color button
-			else if(180 < pos.x && pos.x < 255 && 10 < pos.y && pos.y < 40 && busy())
+			else if(320-MENU_X_HEIGHT < pos.y && pos.y < 320 && 0 < pos.x && pos.x < 40 && busy())
 			{
 				setBusy();
 				currentColor >= (sizeof colors / sizeof colors[0])-1 ? currentColor = 0 : currentColor++;
-
 				FillRectangle(320-MENU_X_HEIGHT,0,MENU_X_HEIGHT,60,
 				colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
 
@@ -126,19 +123,6 @@ int main(void)
 }
 
 
-
-void debugUART(unsigned int x, unsigned int y)
-{
-	//Lav int til string
-	char x_string[100];
-	sprintf(x_string, "X axis: %d \n", x);
-	
-	char y_string[100];
-	sprintf(y_string, "Y axis: %d \n", y);
-	//Send string til uart
-	sendString(x_string);
-	sendString(y_string);
-}
 
 
 

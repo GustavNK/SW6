@@ -10,6 +10,7 @@
 #include <util/delay.h>
 #include <avr/cpufunc.h>
 #include "UART.h"
+#include <stdio.h>
 
 #define BITON(port, bit) port |= 1<<bit
 #define BITOFF(port, bit) port &= ~(1<<bit)
@@ -117,26 +118,26 @@ unsigned char getX()
 	
 }
 
-unsigned int getY()
+unsigned char getY()
 {
 	writeByte(0b10011011);
-	//Read x position
+	//Read y position
 	return readByte();
 	
 }
 
-unsigned int getZ()
+unsigned char getZ()
 {
 	writeByte(0b10111011);
-	//Read x position
+	//Read z position
 	return readByte();
 }
 
 struct Position 
 {
-	unsigned int x;
-	unsigned int y;
-	unsigned int z;	
+	int x;
+	int y;
+	int z;	
 };
 unsigned int formatX(unsigned int x)
 {
@@ -158,14 +159,19 @@ unsigned int formatY(unsigned int y)
 }
 struct Position getPosition()
 {
-	unsigned char _x = getX();
-	unsigned char _y = getY();
-	unsigned char _z = getZ();
-	unsigned int rTouch = (X_PLATE_RES*_x/256) *((256/_z)-1) - Y_PLATE_RES * (1-(_y/256));
+	unsigned int _x = (int)getX();
+	unsigned int _y = (int)getY();
+	unsigned int _z = (int)getZ();
+	int rTouch = (X_PLATE_RES*_x/256) *((256/_z)-1) - Y_PLATE_RES * (1-(_y/256));
+	
+	char string[100];
+	sprintf(string, "rTouch axis: %d \nZ Value: %d\n", rTouch, _z);
+	//Send string til uart
+	sendString(string);
 	
 	struct Position p ;
-	p.x= formatX((unsigned int)_x);
-	p.y=formatY((unsigned int)_y);
+	p.x= formatX(_x);
+	p.y=formatY(_y);
 	p.z = rTouch;
 	return p;
 }

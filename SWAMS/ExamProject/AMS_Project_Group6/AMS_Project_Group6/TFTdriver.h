@@ -38,3 +38,4 @@ void drawCircle(int x, int y, int radius, unsigned char Red, unsigned char Green
 void circleBres(int xc, int yc, int r, unsigned char Red, unsigned char Green, unsigned char Blue);
 void DrawCircle(unsigned int StartX, unsigned int StartY, unsigned int radius,
 unsigned char Red, unsigned char Green, unsigned char Blue);
+void drawIcon(unsigned int StartX, unsigned int StartY);
