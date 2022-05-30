@@ -12,5 +12,6 @@
 void initUART();
 void sendChar(char c);
 void sendString (char* Streng);
+void debugUART(unsigned int x, unsigned int y, unsigned int z );
 
 #endif /* UART_H_ */

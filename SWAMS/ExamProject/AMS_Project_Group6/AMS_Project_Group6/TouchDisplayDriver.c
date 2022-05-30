@@ -10,6 +10,7 @@
 #include <util/delay.h>
 #include <avr/cpufunc.h>
 #include "UART.h"
+#include <stdio.h>
 
 #define BITON(port, bit) port |= 1<<bit
 #define BITOFF(port, bit) port &= ~(1<<bit)
@@ -25,6 +26,9 @@
 #define CLK_BIT 3
 #define IRQ_PORT PORTE
 #define IRQ_BIT 4
+
+#define X_PLATE_RES 255
+#define Y_PLATE_RES 255
 
 
 
@@ -105,3 +109,70 @@ unsigned char readByte(){
 	BITON(PORTE,3);
 	return output;
 }
+
+unsigned char getX()
+{
+	writeByte(0b11011011);
+	//Read x position
+	return readByte();
+	
+}
+
+unsigned char getY()
+{
+	writeByte(0b10011011);
+	//Read y position
+	return readByte();
+	
+}
+
+unsigned char getZ()
+{
+	writeByte(0b10111011);
+	//Read z position
+	return readByte();
+}
+
+struct Position 
+{
+	int x;
+	int y;
+	int z;	
+};
+unsigned int formatX(unsigned int x)
+{
+	//touch max 245
+	// graphic max 240
+	if(x > 240){
+		x = 240;
+	}
+	return 240 - x;
+}
+
+unsigned int formatY(unsigned int y)
+{
+	//touch max 245
+	//Graphic max 320
+	float temp =((float)y * (320.0/240.0) - 15);
+	return 320 - (unsigned int)temp;
+	
+}
+struct Position getPosition()
+{
+	unsigned int _x = (int)getX();
+	unsigned int _y = (int)getY();
+	unsigned int _z = (int)getZ();
+	int rTouch = (X_PLATE_RES*_x/256) *((256/_z)-1) - Y_PLATE_RES * (1-(_y/256));
+	
+	char string[100];
+	sprintf(string, "rTouch axis: %d \nZ Value: %d\n", rTouch, _z);
+	//Send string til uart
+	sendString(string);
+	
+	struct Position p ;
+	p.x= formatX(_x);
+	p.y=formatY(_y);
+	p.z = rTouch;
+	return p;
+}
+

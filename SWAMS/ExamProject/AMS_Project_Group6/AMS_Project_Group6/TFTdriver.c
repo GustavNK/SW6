@@ -203,69 +203,15 @@ unsigned char Red, unsigned char Green, unsigned char Blue)
 	}
 }
 
-
-
-void drawCircle(int xc, int yc, int x, int y, unsigned char Red, unsigned char Green, unsigned char Blue)
+void drawCircle(int x, int y, int radius, unsigned char Red, unsigned char Green, unsigned char Blue)
 {
-	for (int i = -x; i < x; i++)
+	for (int i = -radius; i < radius; i++)
 	{
-		for (int j = -y; j < y; j++)
+		for (int j = -radius; j < radius; j++)
 		{
-			FillPixel(xc+i, yc+j, Red, Green, Blue);
-		}
-	}
-}
-
-// Function for circle-generation
-// using Bresenham's algorithm
-void circleBres(int xc, int yc, int r, unsigned char Red, unsigned char Green, unsigned char Blue)
-{
-	int x = 0, y = r;
-	int d = 3 - 2 * r;
-	drawCircle(xc, yc, x, y, Red, Green, Blue);
-	while (y >= x)
-	{
-		// for each pixel we will
-		// draw all eight pixels
-		x++;
-		
-		// check for decision parameter
-		// and correspondingly
-		// update d, x, y
-		if (d > 0)
-		{
-			y--;
-			d = d + 4 * (x - y) + 10;
-		}
-		else
-		d = d + 4 * x + 6;
-		drawCircle(xc, yc, x, y, Red, Green, Blue);
-	}
-}
-
-
-void DrawCircle(unsigned int StartX, unsigned int StartY, unsigned int radius,
-unsigned char Red, unsigned char Green, unsigned char Blue)
-{
-	//int radius = radius + (1 - radius%2);
-	//int diameter = radius * 2 + 1;
-	//
-	//SetPageAddress(StartX,StartX + radius);
-	//SetColumnAddress(StartY,StartY + radius);
-	//MemoryWrite();
-	//
-	//for (unsigned long i=0; i<((unsigned long)(diameter+1)*(diameter+1)); i++)
-	//{
-	//	if 
-	//	WritePixel(Red,Green,Blue);
-	//}
-	for(int y=-radius; y<=radius; y++)
-	{
-		for(int x=-radius; x<=radius; x++)
-		{
-			if(x*x+y*y <= radius*radius)
+			if(i*i+j*j <= radius*radius)
 			{
-				FillPixel(StartX+x, StartY+y, 0, 0,31);
+				FillPixel(x+i, y+j, Red, Green, Blue);
 			}
 		}
 	}
