@@ -56,7 +56,7 @@ void writeByte(unsigned char input){
 		// MIN 100ns wait before correct read
 		_NOP();
 		_NOP(); // ~125 ns
-		// Hit clock (Aka Yep Cock)
+		// Hit clock 
 		BITON(CLK_PORT, CLK_BIT);
 		// MIN 200 ns wait
 		_NOP();
@@ -87,10 +87,10 @@ unsigned char readByte(){
 			//sendChar( 48 + resultInput);
 		}
 		output = output<<1 | resultInput;
-		// Hit clock (Aka Yep Cock)
+		// Hit clock 
 		_NOP();
 		_NOP(); // ~125 ns
-		// Hit clock (Aka Yep Cock)
+		// Hit clock 
 		BITON(CLK_PORT, CLK_BIT);
 		// MIN 200 ns wait
 		_NOP();
@@ -105,7 +105,7 @@ unsigned char readByte(){
 		_NOP(); // ~250ns
 	}
 	//sendChar('\n');
-	//Sæt CS TIL ON
+	//Sï¿½t CS TIL ON
 	BITON(PORTE,3);
 	return output;
 }
