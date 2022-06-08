@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Poopy_Exam_Example", "Poopy_Exam_Example\Poopy_Exam_Example.fsproj", "{839FDFD6-1565-4A5A-9F59-A59B8E62E268}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{839FDFD6-1565-4A5A-9F59-A59B8E62E268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{839FDFD6-1565-4A5A-9F59-A59B8E62E268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{839FDFD6-1565-4A5A-9F59-A59B8E62E268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{839FDFD6-1565-4A5A-9F59-A59B8E62E268}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
