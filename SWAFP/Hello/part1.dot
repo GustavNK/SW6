@@ -1,0 +1,15 @@
+digraph G {
+
+    Main [shape=box, label="Program.fs"]
+    Main -> Input [label="starts", arrowhead=none, style=dashed]
+    Main -> BoxOffice [label="starts", arrowhead=none, style=dashed]
+    User [label="/user"]
+    User -> Input
+    User -> BoxOffice
+    {rank = same; Input[group=g2]; BoxOffice[group=g3]}
+    Input -> BoxOffice
+    BoxOffice -> TicketSeller1
+    BoxOffice -> TicketSeller2
+    BoxOffice -> TicketSeller3
+    BoxOffice -> TicketSeller4
+}

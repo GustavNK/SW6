@@ -1,0 +1,32 @@
+digraph G {
+
+    Main [shape=box, label="Program.fs"]
+    Main -> Input [label="starts", arrowhead=none, style=dashed]
+    Main -> BoxOffice [label="starts", arrowhead=none, style=dashed]
+    Main -> DatabaseSupervisor [label="starts", arrowhead=none, style=dashed]
+    {rank = same; Input[group=g2]; BoxOffice[group=g2]; DatabaseSupervisor[group=g2]}
+    
+    User [label="/user"]
+    User -> BoxOffice
+    User -> Input
+    User -> DatabaseSupervisor
+    
+    Input -> BoxOffice
+    
+    
+    BoxOffice -> TicketSeller1
+    BoxOffice -> TicketSeller2
+    BoxOffice -> TicketSeller3
+    BoxOffice -> TicketSeller4
+    
+    DatabaseSupervisor -> Database [label="Supervisor for"]
+    
+    TicketSeller1 -> Database [label="msg", style=dashed]
+    TicketSeller2 -> Database [label="msg", style=dashed]
+    TicketSeller3 -> Database [label="msg", style=dashed]
+    TicketSeller4 -> Database [label="msg", style=dashed]
+    
+    
+    
+    
+}
