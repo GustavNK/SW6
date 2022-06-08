@@ -6,103 +6,123 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
 #include <math.h>
 #define F_CPU 16000000
 #include "TouchDisplayDriver.h"
+#include "InteruptTimer.h"
 #include <stdio.h>
 #include "UART.h"
-#include <util/delay.h>
 #include "TFTdriver.h"
 #define X_PLATE_RES 255
 #define Y_PLATE_RES 255
+#define MENU_X_HEIGHT 40
+#define DEBUG 1
+
+// R-G-B = 5-6-5 bits.	
+#define REDCOLORSCALE 31/255
+#define GREENCOLORSCALE 61/255
+#define BLUECOLORSCALE 31/255
+
+struct Color
+{
+	unsigned char Red;
+	unsigned char Green;
+	unsigned char Blue;
+};
+
+// Color constructor
+struct Color Color_new(unsigned char r, unsigned char g, unsigned char b){
+	struct Color c = {.Red = r * REDCOLORSCALE, .Green= g * GREENCOLORSCALE, .Blue = b * BLUECOLORSCALE};
+#ifdef DEBUG
+	char* output = (char*)malloc(25 * sizeof(char));
+	sprintf(output, "R: %d - G: %d - B: %d\n", c.Red, c.Green, c.Blue);
+	sendString(output);
+	free(output);
+#endif
+	return c;
+}
 
 unsigned int formatX(unsigned int x);
 unsigned int formatY(unsigned int y);
 
 int main(void)
 {
-	DisplayInit();
+	// Global interrupt enable
+	sei();
+	initTimer0();
+	
+	DisplayInit(MENU_X_HEIGHT);
 	initTouchDisplay();
 	initUART();
 	DDRB = 0xFF;
 	PORTB = 0;
+	
+	struct Color red	=	Color_new(255,0,0);
+	struct Color green	=	Color_new(0,255,0);
+	struct Color blue	=	Color_new(0,0,255);
+	struct Color yellow	=	Color_new(255,255,0);
+	unsigned char currentColor = 0;
+
+	struct Color* colors[4] = {
+	&red,
+	&green,
+	&blue,
+	&yellow
+	};
 	// Fills rectangle with specified color
 	// (StartX,StartY) = Upper left corner. X horizontal (0-319) , Y vertical (0-239).
 	// Height (1-240) is vertical. Width (1-320) is horizontal.
-	// R-G-B = 5-6-5 bits.	
-	FillRectangle(0,0,320,240,31,61,31);
-	FillRectangle(300,220,20,20,0,0,31);  
 	
-    while (1)
-    {
-	    //_delay_ms(10);
-	    //Writebyte x position (startbit 1, x position, mode 8bit, SER/DFR = low, PD1,PD0 = all on)
-	    writeByte(0b11011011);
-	    //Read x position
-	    unsigned char resultX = readByte();
-	    //Writebyte y position (startbit 1, y position, mode 8bit, SER/DFR = low, PD1,PD0 = all on)
-	    writeByte(0b10011011);
-	    //read y position
-	    unsigned char resultY = readByte();
-		//z1 = 011
-		writeByte(0b10111011);
-		unsigned char resultZ1 = readByte();
-	    //Lav unsigned char om til int
-	    unsigned int x = (int)resultX;
-	    unsigned int y = (int)resultY;
-	    unsigned int z1 = (int)resultZ1;
-	    //Lav int til string
-	    //char x_string[100];
-	    //sprintf(x_string, "X axis: %d \n", x);
+	
+	// Draw white background 
+	FillRectangle(0,0,320,240,31,61,31);
 
-	    //char y_string[100];
-	    //sprintf(y_string, "Y axis: %d \n", y);
-	    //Send string til uart
-	    //sendString(x_string);
-	    //sendString(y_string);
-		
-		unsigned int Rtouch = (X_PLATE_RES*x/256) *((256/z1)-1) - Y_PLATE_RES * (1-(y/256));
-		//char z_string[100];
-		//sprintf(z_string, "Z Res: %u \n", Rtouch);
-		//sendString(z_string);
-		
+	// Draw trach icon
+	drawIcon(320-MENU_X_HEIGHT,200);
+	
+	//Fill green for inital color picker
+	FillRectangle(320-MENU_X_HEIGHT,0,MENU_X_HEIGHT,60,colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
+    while (1)
+	{
+		struct Position pos = getPosition();
+#ifdef DEBUG
+		debugUART(pos.x, pos.y, pos.z);
+#endif
 		unsigned int size;
 		//Hårdt ca 150
 		//Blødt ca 800-900
-		
-		if(Rtouch < 1500)
+		if(pos.z < 1500)
 		{
-			if(20 < x && x < 30 && 20 < y && y < 30 )
+			// Clear canvas button
+			if(320-MENU_X_HEIGHT < pos.y && pos.y < 320 && 200 < pos.x && pos.x < 255 && busy() )
 			{
-			   FillRectangle(0,0,300,240,31,61,31);
+				setBusy();
+				FillRectangle(0,0,320-MENU_X_HEIGHT,240,31,61,31);	
 			}
-			else {
-				size = 1 + (int)pow(((1500-Rtouch)*0.005),2);
-				FillRectangle(formatY(y+(int)(size/2)),formatX(x+(int)(size/2)),size,size,0,63,0);
+			// Change color button
+			else if(320-MENU_X_HEIGHT < pos.y && pos.y < 320 && 0 < pos.x && pos.x < 40 && busy())
+			{
+				setBusy();
+				currentColor >= (sizeof colors / sizeof colors[0])-1 ? currentColor = 0 : currentColor++;
+				FillRectangle(320-MENU_X_HEIGHT,0,MENU_X_HEIGHT,60,
+				colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
+
 			}
-			
+			// Draw
+			else if(pos.y>MENU_X_HEIGHT && busy())
+			{
+				size = 1 + (int)pow(((1500-pos.z)*0.002),2);
+				//circleBres(formatX(x), formatY(y), size, colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);    // function call
+				drawCircle(pos.x,  pos.y, size, colors[currentColor]->Red,colors[currentColor]->Green,colors[currentColor]->Blue);
+			}
+
 		}
-		
     }
 }
 
-unsigned int formatX(unsigned int x)
-{
-	//touch max 245
-	// graphic max 240
-	if(x > 240){
-		x = 240;
-	}
-	return 240 - x;
-}
 
-unsigned int formatY(unsigned int y)
-{
-	//touch max 245
-	//Graphic max 320
-	float temp =((float)y * (320.0/240.0));
-	return 320 - (unsigned int)temp;
-	
-}
+
 
 

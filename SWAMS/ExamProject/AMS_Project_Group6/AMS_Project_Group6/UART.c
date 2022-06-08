@@ -5,6 +5,7 @@
  *  Author: Simon Phi Dang
  */ 
 #include <avr/io.h>
+#include <stdio.h>
 
 void initUART()
 {
@@ -27,4 +28,21 @@ void sendString (char* Streng)
 		sendChar(*Streng);
 		Streng++;
 	}
+}
+
+void debugUART(int x, int y, int z )
+{
+	//Lav int til string
+	char x_string[100];
+	sprintf(x_string, "X axis: %d \n", x);
+	
+	char y_string[100];
+	sprintf(y_string, "Y axis: %d \n", y);
+	
+	char z_string[100];
+	sprintf(z_string, "Z axis: %d \n", z);
+	//Send string til uart
+	sendString(x_string);
+	sendString(y_string);
+	sendString(z_string);
 }

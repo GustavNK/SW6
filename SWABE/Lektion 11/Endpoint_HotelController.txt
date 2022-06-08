@@ -1,0 +1,25 @@
+    [HttpGet("")]
+    public async Task<ActionResult<List<Hotel>>> OnGetAsync()
+    {
+        return await _context.Hotels.Include(r => r.Reviews).ToListAsync();
+    }
+
+    [HttpGet("TopRatedHotels")]
+    public async Task<ActionResult<List<Hotel>>> OnGetTopRatedHotelsAsync()
+    {
+        return await _context.Hotels.Include(r => r.Reviews.Where(r => r.Stars == 10.0)).ToListAsync();
+    }
+    [HttpGet("average")]
+    public float OnGetHotelsAveragerating(string hotelName)
+    {
+        return _context.Hotels.Include(h => h.Reviews).First(r => r.Name == hotelName).Reviews.Average(r => r.Stars);
+    }
+    [HttpGet("most_visited")]
+    public async Task<ActionResult<List<Hotel>>> OnGetHotelsWithTenReviewsAsync(int count)
+    {
+        return await _context.Hotels.Include(r => r.Reviews)
+            .Where(h => h.Reviews.Count() == 10)
+            .Take(count)
+            .ToListAsync();
+        //return await _context.Hotels; // TODO Fix this handler
+    }s

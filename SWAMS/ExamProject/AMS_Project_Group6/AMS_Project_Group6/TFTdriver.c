@@ -23,6 +23,7 @@
 #define F_CPU 16000000
 #include <util/delay.h>
 #include "TFTdriver.h"
+#include "trashArt.h"
 
 // Data port definitions:
 #define DATA_PORT_HIGH PORTA
@@ -43,6 +44,7 @@
 
 #define BitOn(port, bit) port |= 1<<bit;
 #define BitOff(port,bit) port &= ~(1<<bit);
+int noWriteX;
 
 // LOCAL FUNCTIONS /////////////////////////////////////////////////////////////
 
@@ -81,8 +83,9 @@ void WriteData(unsigned int data)
 // PUBLIC FUNCTIONS ////////////////////////////////////////////////////////////
 
 // Initializes (resets) the display
-void DisplayInit()
+void DisplayInit(int menuX)
 {
+	noWriteX = menuX;
 	DDRA |= 0xFF;
 	DDRC |= 0xFF;
 	DDRG |= 1<<CS_BIT | 1<<RST_BIT | 1<<WR_BIT;
@@ -159,11 +162,14 @@ void SetColumnAddress(unsigned int Start, unsigned int End)
 // Set Page Address (0-319), Start > End
 void SetPageAddress(unsigned int Start, unsigned int End)
 {
-	WriteCommand(0x2B);
-	WriteData(Start>>8);
-	WriteData(Start);
-	WriteData(End>>8);		
-	WriteData(End);	
+	if(Start <= 319 - noWriteX)
+	{
+		WriteCommand(0x2B);
+		WriteData(Start>>8);
+		WriteData(Start);
+		WriteData(End>>8);
+		WriteData(End);
+	}
 }
 
 void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char Green, unsigned char Blue)
@@ -182,11 +188,62 @@ void FillPixel(unsigned int x, unsigned int y, unsigned char Red, unsigned char 
 void FillRectangle(unsigned int StartX, unsigned int StartY, unsigned int Width, unsigned int Height, 
 unsigned char Red, unsigned char Green, unsigned char Blue)
 {
-	SetPageAddress(StartX,StartX+Width);
+	// Set page address
+	WriteCommand(0x2B);
+	WriteData(StartX>>8);
+	WriteData(StartX);
+	WriteData((StartX + Width)>>8);
+	WriteData((StartX + Width));
+	//SetPageAddress(StartX,StartX+Width);
 	SetColumnAddress(StartY,StartY+Height);
 	MemoryWrite();
 	for (unsigned long i=0; i<((unsigned long)(Width+1)*(Height+1)); i++)
 	{
 		WritePixel(Red,Green,Blue);
 	}
+}
+
+void drawCircle(int x, int y, int radius, unsigned char Red, unsigned char Green, unsigned char Blue)
+{
+	for (int i = -radius; i < radius; i++)
+	{
+		for (int j = -radius; j < radius; j++)
+		{
+			if(i*i+j*j <= radius*radius)
+			{
+				FillPixel(x+i, y+j, Red, Green, Blue);
+			}
+		}
+	}
+}
+
+void drawIcon(unsigned int StartX, unsigned int StartY)
+{
+
+	// Set page address
+	WriteCommand(0x2B);
+	WriteData(StartX>>8);
+	WriteData(StartX);
+	WriteData((StartX + 39)>>8);
+	WriteData((StartX + 39));
+	//SetPageAddress(StartX,StartX+Width);
+	SetColumnAddress(StartY,StartY+39);
+	MemoryWrite();
+
+	for(int x=0; x<40; x++)
+	{
+		for(int y=0; y<40; y++)
+		{
+			if(trashCan[y][x] == 0)
+			{
+				WritePixel(31, 61,31);
+			}
+			else
+			{
+				WritePixel(0, 0, 0);
+			}
+			
+		}
+	}
+
 }
